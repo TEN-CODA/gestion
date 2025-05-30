@@ -1,0 +1,395 @@
+MODÉLISATION DE LA BASE DE DONNÉES - SYSTÈME DE GESTION SCOLAIRE
+=============================================================
+
+Ce document présente la modélisation complète de la base de données pour le système de gestion scolaire.
+La structure est organisée en plusieurs sections pour une meilleure compréhension.
+
+1. GESTION DES UTILISATEURS ET RÔLES
+-----------------------------------
+
+1.1 Table Users
+--------------
+CREATE TABLE Users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    role ENUM('superadmin', 'admin_ecole', 'professeur', 'parent', 'eleve') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP,
+    status ENUM('active', 'inactive', 'suspended') DEFAULT 'active',
+    avatar_url VARCHAR(255)
+);
+
+Explication:
+- Table centrale pour tous les utilisateurs du système
+- Gère les différents rôles (superadmin, admin école, professeur, parent, élève)
+- Stocke les informations de connexion et le statut des utilisateurs
+- Permet une gestion centralisée des comptes
+
+1.2 Table Ecole
+--------------
+CREATE TABLE Ecole (
+    ecole_id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    adresse TEXT,
+    telephone VARCHAR(20),
+    email VARCHAR(100),
+    directeur_id INT,
+    date_creation DATE,
+    FOREIGN KEY (directeur_id) REFERENCES Users(user_id)
+);
+
+Explication:
+- Stocke les informations de base de l'école
+- Permet la gestion multi-écoles
+- Lie l'école à son directeur (utilisateur)
+
+2. GESTION DES ÉLÈVES ET PARENTS
+--------------------------------
+
+2.1 Table Eleves
+---------------
+CREATE TABLE Eleves (
+    eleve_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    ecole_id INT,
+    nom VARCHAR(50) NOT NULL,
+    prenom VARCHAR(50) NOT NULL,
+    date_naissance DATE,
+    adresse TEXT,
+    telephone VARCHAR(20),
+    classe_id INT,
+    parent_id INT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (ecole_id) REFERENCES Ecole(ecole_id),
+    FOREIGN KEY (classe_id) REFERENCES Classes(classe_id),
+    FOREIGN KEY (parent_id) REFERENCES Parents(parent_id)
+);
+
+Explication:
+- Stocke les informations personnelles des élèves
+- Lie l'élève à son compte utilisateur, son école, sa classe et ses parents
+- Permet le suivi individuel des élèves
+
+2.2 Table Parents
+----------------
+CREATE TABLE Parents (
+    parent_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    nom VARCHAR(50) NOT NULL,
+    prenom VARCHAR(50) NOT NULL,
+    telephone VARCHAR(20),
+    email VARCHAR(100),
+    adresse TEXT,
+    profession VARCHAR(100),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+Explication:
+- Gère les informations des parents
+- Permet la communication avec les parents
+- Lié au système de messagerie
+
+3. GESTION DES PROFESSEURS ET CLASSES
+------------------------------------
+
+3.1 Table Professeurs
+--------------------
+CREATE TABLE Professeurs (
+    professeur_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    ecole_id INT,
+    nom VARCHAR(50) NOT NULL,
+    prenom VARCHAR(50) NOT NULL,
+    specialite VARCHAR(100),
+    telephone VARCHAR(20),
+    email VARCHAR(100),
+    date_embauche DATE,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (ecole_id) REFERENCES Ecole(ecole_id)
+);
+
+Explication:
+- Stocke les informations des professeurs
+- Gère les spécialités et les informations de contact
+- Permet le suivi des professeurs par école
+
+3.2 Table Classes
+----------------
+CREATE TABLE Classes (
+    classe_id INT PRIMARY KEY AUTO_INCREMENT,
+    ecole_id INT,
+    nom VARCHAR(50) NOT NULL,
+    niveau VARCHAR(20),
+    annee_scolaire VARCHAR(9),
+    professeur_principal_id INT,
+    capacite INT,
+    FOREIGN KEY (ecole_id) REFERENCES Ecole(ecole_id),
+    FOREIGN KEY (professeur_principal_id) REFERENCES Professeurs(professeur_id)
+);
+
+Explication:
+- Gère les classes de l'école
+- Stocke les informations sur le niveau et l'année scolaire
+- Permet l'organisation des élèves par classe
+
+4. GESTION DES COURS ET ÉVALUATIONS
+----------------------------------
+
+4.1 Table Matieres
+-----------------
+CREATE TABLE Matieres (
+    matiere_id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    coefficient INT DEFAULT 1,
+    description TEXT
+);
+
+Explication:
+- Définit les matières enseignées
+- Gère les coefficients pour le calcul des moyennes
+
+4.2 Table Cours
+--------------
+CREATE TABLE Cours (
+    cours_id INT PRIMARY KEY AUTO_INCREMENT,
+    classe_id INT,
+    matiere_id INT,
+    professeur_id INT,
+    jour_semaine ENUM('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'),
+    heure_debut TIME,
+    heure_fin TIME,
+    salle VARCHAR(50),
+    FOREIGN KEY (classe_id) REFERENCES Classes(classe_id),
+    FOREIGN KEY (matiere_id) REFERENCES Matieres(matiere_id),
+    FOREIGN KEY (professeur_id) REFERENCES Professeurs(professeur_id)
+);
+
+Explication:
+- Gère l'emploi du temps des cours
+- Organise les cours par classe, matière et professeur
+- Permet la planification des salles
+
+4.3 Table Evaluations
+--------------------
+CREATE TABLE Evaluations (
+    evaluation_id INT PRIMARY KEY AUTO_INCREMENT,
+    cours_id INT,
+    type_evaluation ENUM('Contrôle', 'Devoir', 'Examen', 'Projet'),
+    date_evaluation DATE,
+    coefficient INT DEFAULT 1,
+    description TEXT,
+    FOREIGN KEY (cours_id) REFERENCES Cours(cours_id)
+);
+
+Explication:
+- Gère les différentes évaluations
+- Permet le suivi des types d'évaluations et leurs coefficients
+
+4.4 Table Notes
+--------------
+CREATE TABLE Notes (
+    note_id INT PRIMARY KEY AUTO_INCREMENT,
+    evaluation_id INT,
+    eleve_id INT,
+    valeur DECIMAL(4,2),
+    commentaire TEXT,
+    date_saisie TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evaluation_id) REFERENCES Evaluations(evaluation_id),
+    FOREIGN KEY (eleve_id) REFERENCES Eleves(eleve_id)
+);
+
+Explication:
+- Stocke les notes des élèves
+- Permet le suivi des performances
+- Facilite le calcul des moyennes
+
+5. COMMUNICATION ET ANNONCES
+---------------------------
+
+5.1 Table Messages
+-----------------
+CREATE TABLE Messages (
+    message_id INT PRIMARY KEY AUTO_INCREMENT,
+    expediteur_id INT,
+    destinataire_id INT,
+    sujet VARCHAR(255),
+    contenu TEXT,
+    date_envoi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    lu BOOLEAN DEFAULT FALSE,
+    type_message ENUM('normal', 'urgent', 'systeme'),
+    FOREIGN KEY (expediteur_id) REFERENCES Users(user_id),
+    FOREIGN KEY (destinataire_id) REFERENCES Users(user_id)
+);
+
+Explication:
+- Gère la messagerie interne
+- Permet la communication entre tous les utilisateurs
+- Différencie les types de messages
+
+5.2 Table Annonces
+-----------------
+CREATE TABLE Annonces (
+    annonce_id INT PRIMARY KEY AUTO_INCREMENT,
+    ecole_id INT,
+    titre VARCHAR(255) NOT NULL,
+    contenu TEXT,
+    date_publication TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_expiration TIMESTAMP,
+    auteur_id INT,
+    type_destinataire ENUM('tous', 'professeurs', 'parents', 'eleves', 'classes_specifiques'),
+    priorite ENUM('normale', 'importante', 'urgente'),
+    FOREIGN KEY (ecole_id) REFERENCES Ecole(ecole_id),
+    FOREIGN KEY (auteur_id) REFERENCES Users(user_id)
+);
+
+Explication:
+- Gère les annonces de l'école
+- Permet la diffusion d'informations importantes
+- Cible différents groupes d'utilisateurs
+
+6. GESTION ADMINISTRATIVE
+------------------------
+
+6.1 Table Parametres_Ecole
+-------------------------
+CREATE TABLE Parametres_Ecole (
+    parametre_id INT PRIMARY KEY AUTO_INCREMENT,
+    ecole_id INT,
+    nom_etablissement VARCHAR(100),
+    adresse TEXT,
+    telephone VARCHAR(20),
+    email VARCHAR(100),
+    site_web VARCHAR(255),
+    logo_url VARCHAR(255),
+    annee_scolaire_courante VARCHAR(9),
+    date_debut_annee DATE,
+    date_fin_annee DATE,
+    FOREIGN KEY (ecole_id) REFERENCES Ecole(ecole_id)
+);
+
+Explication:
+- Stocke les paramètres de configuration de l'école
+- Gère les informations de contact et l'identité visuelle
+- Définit les périodes scolaires
+
+6.2 Table Convocations
+---------------------
+CREATE TABLE Convocations (
+    convocation_id INT PRIMARY KEY AUTO_INCREMENT,
+    ecole_id INT,
+    titre VARCHAR(255) NOT NULL,
+    description TEXT,
+    date_convocation DATETIME,
+    type_convocation ENUM('conseil_classe', 'reunion_parents', 'reunion_profs', 'autre'),
+    statut ENUM('planifiee', 'en_cours', 'terminee', 'annulee'),
+    FOREIGN KEY (ecole_id) REFERENCES Ecole(ecole_id)
+);
+
+Explication:
+- Gère les réunions et convocations
+- Permet le suivi des différents types de réunions
+- Facilite l'organisation des événements
+
+7. SUIVI ET PERFORMANCES
+-----------------------
+
+7.1 Table Performances_Classe
+---------------------------
+CREATE TABLE Performances_Classe (
+    performance_id INT PRIMARY KEY AUTO_INCREMENT,
+    classe_id INT,
+    matiere_id INT,
+    periode VARCHAR(20),
+    moyenne_classe DECIMAL(4,2),
+    taux_reussite DECIMAL(5,2),
+    meilleure_note DECIMAL(4,2),
+    pire_note DECIMAL(4,2),
+    date_calcul TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (classe_id) REFERENCES Classes(classe_id),
+    FOREIGN KEY (matiere_id) REFERENCES Matieres(matiere_id)
+);
+
+Explication:
+- Suit les performances des classes
+- Calcule les statistiques importantes
+- Permet l'analyse des résultats
+
+7.2 Table Suivi_Professeur
+-------------------------
+CREATE TABLE Suivi_Professeur (
+    suivi_id INT PRIMARY KEY AUTO_INCREMENT,
+    professeur_id INT,
+    date_evaluation DATE,
+    type_evaluation ENUM('annuelle', 'trimestrielle', 'exceptionnelle'),
+    note_evaluation DECIMAL(4,2),
+    commentaires TEXT,
+    evaluateur_id INT,
+    FOREIGN KEY (professeur_id) REFERENCES Professeurs(professeur_id),
+    FOREIGN KEY (evaluateur_id) REFERENCES Users(user_id)
+);
+
+Explication:
+- Gère l'évaluation des professeurs
+- Permet le suivi des performances
+- Facilite le feedback et l'amélioration
+
+8. SUPPORT ET DOCUMENTATION
+--------------------------
+
+8.1 Table Support_Tickets
+-----------------------
+CREATE TABLE Support_Tickets (
+    ticket_id INT PRIMARY KEY AUTO_INCREMENT,
+    ecole_id INT,
+    expediteur_id INT,
+    sujet VARCHAR(255),
+    description TEXT,
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    statut ENUM('ouvert', 'en_cours', 'resolu', 'ferme'),
+    priorite ENUM('basse', 'moyenne', 'haute', 'urgente'),
+    categorie VARCHAR(50),
+    FOREIGN KEY (ecole_id) REFERENCES Ecole(ecole_id),
+    FOREIGN KEY (expediteur_id) REFERENCES Users(user_id)
+);
+
+Explication:
+- Gère le système de support
+- Permet le suivi des problèmes
+- Facilite la résolution des incidents
+
+8.2 Table Documents
+-----------------
+CREATE TABLE Documents (
+    document_id INT PRIMARY KEY AUTO_INCREMENT,
+    titre VARCHAR(255) NOT NULL,
+    type_document ENUM('bulletin', 'certificat', 'attestation', 'autre'),
+    url_fichier VARCHAR(255),
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    eleve_id INT,
+    classe_id INT,
+    FOREIGN KEY (eleve_id) REFERENCES Eleves(eleve_id),
+    FOREIGN KEY (classe_id) REFERENCES Classes(classe_id)
+);
+
+Explication:
+- Gère les documents administratifs
+- Stocke les bulletins et certificats
+- Facilite l'accès aux documents importants
+
+NOTES IMPORTANTES
+----------------
+1. Toutes les tables utilisent des clés étrangères pour maintenir l'intégrité référentielle
+2. Les timestamps sont utilisés pour le suivi des modifications
+3. Les énumérations (ENUM) sont utilisées pour limiter les valeurs possibles
+4. Les index sont automatiquement créés sur les clés primaires
+5. Les contraintes NOT NULL sont utilisées pour les champs obligatoires
+
+RECOMMANDATIONS
+--------------
+1. Créer des index supplémentaires sur les champs fréquemment utilisés dans les recherches
+2. Mettre en place des triggers pour la mise à jour automatique des timestamps
+3. Implémenter des procédures stockées pour les opérations complexes
+4. Utiliser des vues pour simplifier les requêtes fréquentes
+5. Mettre en place un système de backup régulier 

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Parent - École Excellence</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/parent/style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>École Excellence</h3>
+                <span class="role-badge parent-badge">Parent</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('indexParent')}}"  onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('enfantParent')}}"  onclick="showTab('children')"><i class="fas fa-child"></i> Mes Enfants</a></li>
+                    <li><a href="{{url_for('paiementsParent')}}" class="active" onclick="showTab('payments')"><i class="fas fa-money-bill-wave"></i> Paiements</a></li>
+                    <li><a href="{{url_for('messagerieParent')}}" onclick="showTab('messages')"><i class="fas fa-comments"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('performanceParent')}}" onclick="showTab('performance')"><i class="fas fa-chart-line"></i> Performances</a></li>
+                    <li><a href="{{url_for('horaireParent')}}" onclick="showTab('schedule')"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                    <li><a href="#" onclick="showTab('exams')"><i class="fas fa-clipboard-list"></i> Contrôles</a></li>
+                    <li><a href="{{url_for('calendrierParent')}}"  onclick="showTab('calendar')"><i class="fas fa-calendar-check"></i> Calendrier</a></li>
+                </ul>
+                
+                <h4>Autres</h4>
+                <ul>
+                    <li><a href="#" onclick="showTab('absences')"><i class="fas fa-user-times"></i> Absences</a></li>
+                    <li><a href="#" onclick="showTab('behavior')"><i class="fas fa-exclamation-triangle"></i> Comportement</a></li>
+                    <li><a href="{{url_for('notificationsParent')}}"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li><a href="{{url_for('parametreParent')}}" ><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="page-title">Paiements </h2>
+                <div class="user-info">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Parent Martin</span>
+                </div>
+            </div>
+            <!-- Switcher -->
+            <div style="margin-bottom: 20px;">
+                <div class="form-group" style="display: inline-block; margin-right: 15px;">
+                    <label>Enfant</label>
+                    <select class="form-control">
+                        <option>Marie Durand (4ème B)</option>
+                        <option>Thomas Martin (6ème A)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: inline-block;">
+                    <label>Période</label>
+                    <select class="form-control">
+                        <option>Ce trimestre</option>
+                        <option>Ce mois</option>
+                        <option>Cette année</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Payments Tab -->
+            <div id="payments" class="tab-content">
+                <div class="tabs">
+                    <div class="tab active" onclick="showInnerTab('payments-list')">Historique des Paiements</div>
+                    <div class="tab" onclick="showInnerTab('payment-request')">Demande de Dérégulation</div>
+                </div>
+                
+                <div id="payments-list" class="inner-tab-content active">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Enfant</th>
+                                <th>Description</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th>Reçu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marie Durand</td>
+                                <td>Frais de scolarité - Trimestre 1</td>
+                                <td>450€</td>
+                                <td>15/09/2023</td>
+                                <td><span class="payment-status payment-paid">Payé</span></td>
+                                <td><button class="btn btn-primary btn-sm">Télécharger</button></td>
+                            </tr>
+                            <tr>
+                                <td>Thomas Martin</td>
+                                <td>Frais de scolarité - Trimestre 1</td>
+                                <td>450€</td>
+                                <td>15/09/2023</td>
+                                <td><span class="payment-status payment-paid">Payé</span></td>
+                                <td><button class="btn btn-primary btn-sm">Télécharger</button></td>
+                            </tr>
+                            <tr>
+                                <td>Marie Durand</td>
+                                <td>Voyage scolaire</td>
+                                <td>120€</td>
+                                <td>01/10/2023</td>
+                                <td><span class="payment-status payment-paid">Payé</span></td>
+                                <td><button class="btn btn-primary btn-sm">Télécharger</button></td>
+                            </tr>
+                            <tr>
+                                <td>Thomas Martin</td>
+                                <td>Frais de scolarité - Trimestre 2</td>
+                                <td>450€</td>
+                                <td>Échéance 15/11/2023</td>
+                                <td><span class="payment-status payment-pending">En attente</span></td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="recent-activity" style="margin-top: 20px;">
+                        <h3 class="section-title"><i class="fas fa-info-circle"></i> Solde global</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="color: var(--dark-color);">Total payé: 1020€</h3>
+                                <p style="color: var(--warning-color);">Montant dû: 450€</p>
+                            </div>
+                            <button class="btn btn-primary">Effectuer un paiement</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="payment-request" class="inner-tab-content active">
+                    <div class="recent-activity">
+                        <h3 class="section-title"><i class="fas fa-file-alt"></i> Demande de Dérégulation</h3>
+                        <form>
+                            <div class="form-group">
+                                <label>Enfant concerné</label>
+                                <select class="form-control">
+                                    <option>Marie Durand (4ème B)</option>
+                                    <option>Thomas Martin (6ème A)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Type de demande</label>
+                                <select class="form-control">
+                                    <option>Report de paiement</option>
+                                    <option>Échelonnement</option>
+                                    <option>Réduction exceptionnelle</option>
+                                    <option>Autre</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Montant concerné</label>
+                                <input type="text" class="form-control" placeholder="450€">
+                            </div>
+                            <div class="form-group">
+                                <label>Date limite souhaitée</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Justificatif</label>
+                                <input type="file" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Motivation</label>
+                                <textarea class="form-control" rows="5" placeholder="Expliquez votre situation..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+   </body>
+</html>

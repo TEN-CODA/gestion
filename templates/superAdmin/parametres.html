@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/style.css')}}">
+    <style>
+        /* Styles spécifiques à la page des paramètres */
+        .settings-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 20px;
+        }
+
+        .settings-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .settings-section h2 {
+            padding: 1.5rem;
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.2rem;
+        }
+
+        .settings-card {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="password"],
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 0.8rem 0;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Responsive Design pour les paramètres */
+        @media (max-width: 768px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-section {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('superadmin_index')}}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('ecolesSuperAd')}}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{url_for('usersSuperAd')}}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{url_for('supportSuperAd')}}"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{url_for('rapportsSuperAd')}}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{url_for('messagerieSuperAd')}}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('parametresSuperAd')}}" class="active"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Paramètres</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <!-- Settings Sections -->
+            <div class="settings-container">
+                <!-- Profil -->
+                <div class="settings-section">
+                    <h2>Profil</h2>
+                    <div class="settings-card">
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label for="profileName">Nom complet</label>
+                                <input type="text" id="profileName" value="Super Admin">
+                            </div>
+                            <div class="form-group">
+                                <label for="profileEmail">Email</label>
+                                <input type="email" id="profileEmail" value="admin@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="profilePhone">Téléphone</label>
+                                <input type="tel" id="profilePhone" value="+33 1 23 45 67 89">
+                            </div>
+                            <div class="form-group">
+                                <label for="profilePhoto">Photo de profil</label>
+                                <input type="file" id="profilePhoto" accept="image/*">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Sécurité -->
+                <div class="settings-section">
+                    <h2>Sécurité</h2>
+                    <div class="settings-card">
+                        <form id="securityForm">
+                            <div class="form-group">
+                                <label for="currentPassword">Mot de passe actuel</label>
+                                <input type="password" id="currentPassword">
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword">Nouveau mot de passe</label>
+                                <input type="password" id="newPassword">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirmer le mot de passe</label>
+                                <input type="password" id="confirmPassword">
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="twoFactorAuth">
+                                    Activer l'authentification à deux facteurs
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="settings-section">
+                    <h2>Notifications</h2>
+                    <div class="settings-card">
+                        <form id="notificationsForm">
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    Notifications par email
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="smsNotifications">
+                                    Notifications par SMS
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="newUserNotifications" checked>
+                                    Nouveaux utilisateurs
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="supportNotifications" checked>
+                                    Tickets de support
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="systemNotifications" checked>
+                                    Alertes système
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Système -->
+                <div class="settings-section">
+                    <h2>Système</h2>
+                    <div class="settings-card">
+                        <form id="systemForm">
+                            <div class="form-group">
+                                <label for="language">Langue</label>
+                                <select id="language">
+                                    <option value="fr">Français</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="timezone">Fuseau horaire</label>
+                                <select id="timezone">
+                                    <option value="Europe/Paris">Paris (UTC+1)</option>
+                                    <option value="Europe/London">London (UTC+0)</option>
+                                    <option value="America/New_York">New York (UTC-5)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dateFormat">Format de date</label>
+                                <select id="dateFormat">
+                                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="maintenanceMode">
+                                    Mode maintenance
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+</body>
+</html> 

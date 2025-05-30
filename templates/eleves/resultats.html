@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Résultats - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/eleve/style.css')}}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Réutilisation des styles de base du dashboard */
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+            --secondary-color: #95a5a6;
+        }
+
+        /* Styles spécifiques pour la page des résultats */
+        .results-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .stats-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .subject-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .subject-average {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar (même que dashboard) -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('eleve_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="{{ url_for('eleve_resultats') }}" class="active"><i class="fas fa-chart-line"></i> Mes résultats</a></li>
+                <li><a href="{{ url_for('eleve_emploi_du_temps') }}"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                <li><a href="{{ url_for('eleve_classement') }}"><i class="fas fa-trophy"></i> Classement</a></li>
+                <li><a href="{{ url_for('eleve_annonces') }}"><i class="fas fa-bullhorn"></i> Annonces</a></li>
+                <li><a href="{{ url_for('eleve_messagerie') }}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Mes Résultats</h1>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Jean Dupont - 5ème A</span>
+                </div>
+            </div>
+
+            <div class="results-container">
+                <!-- Colonne principale -->
+                <div class="main-column">
+                    <!-- Graphique d'évolution -->
+                    <div class="chart-container">
+                        <h2>Évolution des notes</h2>
+                        <canvas id="gradesChart"></canvas>
+                    </div>
+
+                    <!-- Détail par matière -->
+                    <div class="chart-container">
+                        <h2>Détail par matière</h2>
+                        <div class="subject-card">
+                            <div class="subject-header">
+                                <span class="subject-name">Mathématiques</span>
+                                <span class="subject-average">16.5/20</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 82.5%"></div>
+                            </div>
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Note</th>
+                                        <th>Moyenne classe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>15/03/2024</td>
+                                        <td>Contrôle</td>
+                                        <td>18/20</td>
+                                        <td>14.2/20</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/03/2024</td>
+                                        <td>Devoir</td>
+                                        <td>15/20</td>
+                                        <td>13.8/20</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="subject-card">
+                            <div class="subject-header">
+                                <span class="subject-name">Français</span>
+                                <span class="subject-average">15.8/20</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 79%"></div>
+                            </div>
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Note</th>
+                                        <th>Moyenne classe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>12/03/2024</td>
+                                        <td>Contrôle</td>
+                                        <td>16/20</td>
+                                        <td>13.5/20</td>
+                                    </tr>
+                                    <tr>
+                                        <td>28/02/2024</td>
+                                        <td>Devoir</td>
+                                        <td>15.5/20</td>
+                                        <td>14.2/20</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colonne latérale -->
+                <div class="side-column">
+                    <!-- Statistiques globales -->
+                    <div class="stats-card">
+                        <h3>Moyenne générale</h3>
+                        <div class="stats-value">16.5/20</div>
+                        <p>Rang: 3ème sur 120 élèves</p>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>Progression</h3>
+                        <div class="stats-value">+1.2</div>
+                        <p>Par rapport au trimestre précédent</p>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>Matières fortes</h3>
+                        <ul>
+                            <li>Mathématiques (16.5/20)</li>
+                            <li>Physique (16.2/20)</li>
+                            <li>Histoire (15.8/20)</li>
+                        </ul>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>Matières à améliorer</h3>
+                        <ul>
+                            <li>Anglais (14.5/20)</li>
+                            <li>Français (15.8/20)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration du graphique d'évolution
+        const ctx = document.getElementById('gradesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                datasets: [{
+                    label: 'Moyenne générale',
+                    data: [15.3, 15.8, 16.2, 16.5, 16.5, 16.5],
+                    borderColor: '#3498db',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 10,
+                        max: 20
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

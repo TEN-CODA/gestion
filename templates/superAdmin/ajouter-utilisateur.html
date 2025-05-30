@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un utilisateur - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/superAdmin/style.css') }}">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        .avatar-upload {
+            border: 2px dashed var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-upload:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 144, 226, 0.05);
+        }
+
+        .avatar-upload i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .avatar-upload p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .avatar-upload span {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .permissions-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .permissions-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .permission-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .permission-item label {
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .permissions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{ url_for('superadmin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{ url_for('superadmin_ecoles') }}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{ url_for('superadmin_utilisateurs') }}" class="active"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{ url_for('superadmin_support') }}"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{ url_for('superadmin_rapports') }}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{ url_for('superadmin_messagerie') }}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{ url_for('superadmin_parametres') }}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Ajouter un utilisateur</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Nouvel utilisateur</h2>
+                    <p>Remplissez les informations ci-dessous pour ajouter un nouvel utilisateur</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('superadmin_ajouter_utilisateur') }}">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="username">Nom d'utilisateur</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirmer le mot de passe</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role">Rôle</label>
+                            <select id="role" name="role" required>
+                                <option value="">Sélectionnez un rôle</option>
+                                <option value="superadmin">Super Admin</option>
+                                <option value="admin">Admin École</option>
+                                <option value="professeur">Professeur</option>
+                                <option value="eleve">Élève</option>
+                                <option value="parent">Parent</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ecole">École</label>
+                            <select id="ecole" name="ecole_id">
+                                <option value="">Sélectionnez une école</option>
+                                {% for ecole in ecoles %}
+                                <option value="{{ ecole.id }}">{{ ecole.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Photo de profil</label>
+                            <div class="avatar-upload" onclick="document.getElementById('avatarInput').click()">
+                                <input type="file" id="avatarInput" accept="image/*" style="display: none">
+                                <i class="fas fa-user-circle"></i>
+                                <p>Cliquez pour télécharger une photo</p>
+                                <span>PNG, JPG ou GIF (max. 2MB)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <div class="permissions-section">
+                                <h3>Permissions</h3>
+                                <div class="permissions-grid">
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm1" name="permissions[]" value="manage_users">
+                                        <label for="perm1">Gérer les utilisateurs</label>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm2" name="permissions[]" value="manage_content">
+                                        <label for="perm2">Gérer le contenu</label>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm3" name="permissions[]" value="view_reports">
+                                        <label for="perm3">Voir les rapports</label>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm4" name="permissions[]" value="manage_settings">
+                                        <label for="perm4">Gérer les paramètres</label>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm5" name="permissions[]" value="send_notifications">
+                                        <label for="perm5">Envoyer des notifications</label>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm6" name="permissions[]" value="manage_roles">
+                                        <label for="perm6">Gérer les rôles</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ url_for('superadmin_utilisateurs') }}" class="btn btn-secondary">Annuler</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Ajouter l'utilisateur
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+    <script>
+        // Validation du formulaire
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const role = document.getElementById('role').value;
+            const ecole = document.getElementById('ecole').value;
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Les mots de passe ne correspondent pas');
+                return;
+            }
+
+            if (role !== 'superadmin' && !ecole) {
+                e.preventDefault();
+                alert('Veuillez sélectionner une école pour cet utilisateur');
+                return;
+            }
+        });
+
+        // Afficher/masquer le champ école selon le rôle
+        document.getElementById('role').addEventListener('change', function() {
+            const ecoleField = document.getElementById('ecole').parentElement;
+            if (this.value === 'superadmin') {
+                ecoleField.style.display = 'none';
+            } else {
+                ecoleField.style.display = 'block';
+            }
+        });
+
+        // Prévisualisation de l'avatar
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarUpload = document.querySelector('.avatar-upload');
+                    avatarUpload.innerHTML = `
+                        <img src="${e.target.result}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                        <p>Cliquez pour changer la photo</p>
+                    `;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html> 

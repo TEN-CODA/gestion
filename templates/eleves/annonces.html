@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annonces - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/eleve/style.css')}}">
+    <style>
+        /* Réutilisation des styles de base */
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+            --secondary-color: #95a5a6;
+        }
+
+        /* Styles spécifiques pour la page des annonces */
+        .announcements-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .announcement-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .announcement-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .announcement-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--secondary-color);
+            font-size: 0.9em;
+        }
+
+        .announcement-content {
+            color: #2c3e50;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .announcement-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .announcement-tags {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            background: #f0f2f5;
+            color: var(--secondary-color);
+        }
+
+        .tag.event { background: #e3f2fd; color: var(--primary-color); }
+        .tag.important { background: #ffebee; color: var(--danger-color); }
+        .tag.sale { background: #e8f5e9; color: var(--success-color); }
+
+        .announcement-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .action-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background: #f0f2f5;
+            color: var(--secondary-color);
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Styles pour les commentaires */
+        .comments-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .comments-count {
+            color: var(--secondary-color);
+            font-size: 0.9em;
+        }
+
+        .comment {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .comment-date {
+            color: var(--secondary-color);
+            font-size: 0.8em;
+        }
+
+        .comment-text {
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: none;
+            min-height: 60px;
+        }
+
+        .comment-submit {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .comment-submit:hover {
+            opacity: 0.9;
+        }
+
+        .filters-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-group h3 {
+            margin-bottom: 10px;
+            font-size: 1em;
+            color: #2c3e50;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .announcements-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar (même que dashboard) -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('eleve_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="{{ url_for('eleve_resultats') }}"><i class="fas fa-chart-line"></i> Mes résultats</a></li>
+                <li><a href="{{ url_for('eleve_emploi_du_temps') }}"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                <li><a href="{{ url_for('eleve_classement') }}"><i class="fas fa-trophy"></i> Classement</a></li>
+                <li><a href="{{ url_for('eleve_annonces') }}" class="active"><i class="fas fa-bullhorn"></i> Annonces</a></li>
+                <li><a href="{{ url_for('eleve_messagerie') }}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Annonces</h1>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Jean Dupont - 5ème A</span>
+                </div>
+            </div>
+
+            <div class="announcements-container">
+                <!-- Colonne principale -->
+                <div class="main-column">
+                    <!-- Annonce 1 -->
+                    <div class="announcement-card">
+                        <div class="announcement-header">
+                            <h2 class="announcement-title">Concours de Génies en Herbe</h2>
+                            <div class="announcement-meta">
+                                <span><i class="fas fa-calendar"></i> 20/03/2024</span>
+                                <span><i class="fas fa-user"></i> Direction</span>
+                            </div>
+                        </div>
+                        <div class="announcement-content">
+                            <p>Les inscriptions pour le concours de Génies en Herbe sont maintenant ouvertes ! Ce concours annuel mettra à l'épreuve vos connaissances générales et votre esprit d'équipe.</p>
+                            <p>Date du concours : 15 avril 2024<br>
+                            Lieu : Salle polyvalente<br>
+                            Horaires : 14h00 - 17h00</p>
+                        </div>
+                        <div class="announcement-footer">
+                            <div class="announcement-tags">
+                                <span class="tag event">Événement</span>
+                                <span class="tag important">Important</span>
+                            </div>
+                            <div class="announcement-actions">
+                                <button class="action-btn secondary">
+                                    <i class="fas fa-bookmark"></i> Sauvegarder
+                                </button>
+                                <button class="action-btn primary">
+                                    <i class="fas fa-check"></i> S'inscrire
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Section des commentaires -->
+                        <div class="comments-section">
+                            <div class="comments-header">
+                                <h3>Commentaires</h3>
+                                <span class="comments-count">3 commentaires</span>
+                            </div>
+
+                            <!-- Liste des commentaires -->
+                            <div class="comments-list">
+                                <div class="comment">
+                                    <img src="https://via.placeholder.com/40" alt="Avatar" class="comment-avatar">
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <span class="comment-author">Marie Martin</span>
+                                            <span class="comment-date">21/03/2024 14:30</span>
+                                        </div>
+                                        <p class="comment-text">Je suis très intéressée par ce concours ! Est-ce qu'on peut former des équipes de 4 personnes ?</p>
+                                    </div>
+                                </div>
+
+                                <div class="comment">
+                                    <img src="https://via.placeholder.com/40" alt="Avatar" class="comment-avatar">
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <span class="comment-author">Pierre Durand</span>
+                                            <span class="comment-date">21/03/2024 15:45</span>
+                                        </div>
+                                        <p class="comment-text">Oui, les équipes sont de 4 personnes maximum. Il faut s'inscrire avant le 10 avril.</p>
+                                    </div>
+                                </div>
+
+                                <div class="comment">
+                                    <img src="https://via.placeholder.com/40" alt="Avatar" class="comment-avatar">
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <span class="comment-author">Sophie Lambert</span>
+                                            <span class="comment-date">21/03/2024 16:20</span>
+                                        </div>
+                                        <p class="comment-text">Quelles sont les catégories de questions ?</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formulaire de commentaire -->
+                            <form class="comment-form">
+                                <textarea class="comment-input" placeholder="Ajouter un commentaire..." required></textarea>
+                                <button type="submit" class="comment-submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Annonce 2 -->
+                    <div class="announcement-card">
+                        <div class="announcement-header">
+                            <h2 class="announcement-title">Vente de livres scolaires</h2>
+                            <div class="announcement-meta">
+                                <span><i class="fas fa-calendar"></i> 18/03/2024</span>
+                                <span><i class="fas fa-user"></i> Association des parents</span>
+                            </div>
+                        </div>
+                        <div class="announcement-content">
+                            <p>Les anciens élèves organisent une vente de livres scolaires d'occasion. Une excellente occasion de trouver vos manuels à prix réduit pour l'année prochaine.</p>
+                            <p>Date : Vendredi 22 mars 2024<br>
+                            Lieu : Salle polyvalente<br>
+                            Horaires : 15h00 - 17h00</p>
+                        </div>
+                        <div class="announcement-footer">
+                            <div class="announcement-tags">
+                                <span class="tag sale">Vente</span>
+                            </div>
+                            <div class="announcement-actions">
+                                <button class="action-btn secondary">
+                                    <i class="fas fa-bookmark"></i> Sauvegarder
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Section des commentaires -->
+                        <div class="comments-section">
+                            <div class="comments-header">
+                                <h3>Commentaires</h3>
+                                <span class="comments-count">1 commentaire</span>
+                            </div>
+
+                            <!-- Liste des commentaires -->
+                            <div class="comments-list">
+                                <div class="comment">
+                                    <img src="https://via.placeholder.com/40" alt="Avatar" class="comment-avatar">
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <span class="comment-author">Thomas Moreau</span>
+                                            <span class="comment-date">19/03/2024 09:15</span>
+                                        </div>
+                                        <p class="comment-text">Est-ce qu'il y aura des livres de mathématiques pour la 4ème ?</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formulaire de commentaire -->
+                            <form class="comment-form">
+                                <textarea class="comment-input" placeholder="Ajouter un commentaire..." required></textarea>
+                                <button type="submit" class="comment-submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colonne latérale -->
+                <div class="side-column">
+                    <!-- Filtres -->
+                    <div class="filters-card">
+                        <input type="text" class="search-box" placeholder="Rechercher une annonce...">
+                        
+                        <div class="filter-group">
+                            <h3>Catégories</h3>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" checked> Événements
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked> Ventes
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked> Concours
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked> Informations
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h3>Date</h3>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" checked> Cette semaine
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" checked> Ce mois
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox"> Plus ancien
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Annonces sauvegardées -->
+                    <div class="filters-card">
+                        <h3>Annonces sauvegardées</h3>
+                        <div class="announcement-card" style="margin-bottom: 10px;">
+                            <div class="announcement-header">
+                                <h2 class="announcement-title">Stage de révision</h2>
+                                <div class="announcement-meta">
+                                    <span><i class="fas fa-calendar"></i> 15/03/2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des filtres
+        document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Ici, vous pouvez ajouter la logique pour filtrer les annonces
+                console.log('Filtre modifié:', this.checked);
+            });
+        });
+
+        // Gestion de la recherche
+        document.querySelector('.search-box').addEventListener('input', function(e) {
+            // Ici, vous pouvez ajouter la logique pour la recherche
+            console.log('Recherche:', e.target.value);
+        });
+
+        // Gestion des commentaires
+        document.querySelectorAll('.comment-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const commentInput = this.querySelector('.comment-input');
+                const commentText = commentInput.value.trim();
+                const annonceId = this.closest('.announcement-card').dataset.annonceId;
+                
+                if (commentText) {
+                    // Envoyer le commentaire au serveur
+                    fetch(`/eleve/annonces/${annonceId}/commenter`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            'contenu': commentText,
+                            'eleve_id': '{{ current_user.id }}'  // À remplacer par l'ID de l'élève connecté
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Ajouter le nouveau commentaire à la liste
+                            const commentsList = this.closest('.comments-section').querySelector('.comments-list');
+                            const newComment = document.createElement('div');
+                            newComment.className = 'comment';
+                            newComment.innerHTML = `
+                                <img src="${data.commentaire.avatar}" alt="Avatar" class="comment-avatar">
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <span class="comment-author">${data.commentaire.auteur}</span>
+                                        <span class="comment-date">${data.commentaire.date}</span>
+                                    </div>
+                                    <p class="comment-text">${data.commentaire.contenu}</p>
+                                </div>
+                            `;
+                            commentsList.appendChild(newComment);
+                            
+                            // Réinitialiser le formulaire
+                            commentInput.value = '';
+                            
+                            // Mettre à jour le compteur de commentaires
+                            const commentsCount = this.closest('.comments-section').querySelector('.comments-count');
+                            const currentCount = parseInt(commentsCount.textContent);
+                            commentsCount.textContent = `${currentCount + 1} commentaire${currentCount === 0 ? '' : 's'}`;
+                        } else {
+                            alert(data.message || 'Erreur lors de l\'ajout du commentaire');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        alert('Erreur lors de l\'ajout du commentaire');
+                    });
+                }
+            });
+        });
+
+        // Gestion de la sauvegarde des annonces
+        document.querySelectorAll('.action-btn.secondary').forEach(button => {
+            button.addEventListener('click', function() {
+                const annonceId = this.closest('.announcement-card').dataset.annonceId;
+                
+                fetch(`/eleve/annonces/${annonceId}/sauvegarder`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'eleve_id': '{{ current_user.id }}'  // À remplacer par l'ID de l'élève connecté
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mettre à jour l'état du bouton
+                        const icon = this.querySelector('i');
+                        if (data.action === 'sauvegardée') {
+                            icon.className = 'fas fa-bookmark';
+                            this.classList.add('active');
+                        } else {
+                            icon.className = 'far fa-bookmark';
+                            this.classList.remove('active');
+                        }
+                    } else {
+                        alert(data.message || 'Erreur lors de la sauvegarde de l\'annonce');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la sauvegarde de l\'annonce');
+                });
+            });
+        });
+
+        // Gestion de l'inscription aux événements
+        document.querySelectorAll('.action-btn.primary').forEach(button => {
+            button.addEventListener('click', function() {
+                const annonceId = this.closest('.announcement-card').dataset.annonceId;
+                
+                fetch(`/eleve/annonces/${annonceId}/inscrire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'eleve_id': '{{ current_user.id }}'  // À remplacer par l'ID de l'élève connecté
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mettre à jour l'état du bouton
+                        const icon = this.querySelector('i');
+                        if (data.action === 'inscrit') {
+                            icon.className = 'fas fa-check';
+                            this.classList.add('active');
+                        } else {
+                            icon.className = 'far fa-check';
+                            this.classList.remove('active');
+                        }
+                    } else {
+                        alert(data.message || 'Erreur lors de l\'inscription à l\'événement');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de l\'inscription à l\'événement');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

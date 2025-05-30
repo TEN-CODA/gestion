@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Parent - École Excellence</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/parent/style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>École Excellence</h3>
+                <span class="role-badge parent-badge">Parent</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('indexParent')}}"  onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('enfantParent')}}" class="active"  onclick="showTab('children')"><i class="fas fa-child"></i> Mes Enfants</a></li>
+                    <li><a href="{{url_for('paiementsParent')}}" onclick="showTab('payments')"><i class="fas fa-money-bill-wave"></i> Paiements</a></li>
+                    <li><a href="{{url_for('messagerieParent')}}" onclick="showTab('messages')"><i class="fas fa-comments"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('performanceParent')}}" onclick="showTab('performance')"><i class="fas fa-chart-line"></i> Performances</a></li>
+                    <li><a href="{{url_for('horaireParent')}}" onclick="showTab('schedule')"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                    <li><a href="#" onclick="showTab('exams')"><i class="fas fa-clipboard-list"></i> Contrôles</a></li>
+                    <li><a href="{{url_for('calendrierParent')}}"  onclick="showTab('calendar')"><i class="fas fa-calendar-check"></i> Calendrier</a></li>
+                </ul>
+                
+                <h4>Autres</h4>
+                <ul>
+                    <li><a href="#" onclick="showTab('absences')"><i class="fas fa-user-times"></i> Absences</a></li>
+                    <li><a href="#" onclick="showTab('behavior')"><i class="fas fa-exclamation-triangle"></i> Comportement</a></li>
+                    <li><a href="{{url_for('notificationsParent')}}"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li><a href="{{url_for('parametreParent')}}" ><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="page-title">Détails</h2>
+                <div class="user-info">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Parent Martin</span>
+                </div>
+            </div>
+            
+           
+            
+            <!-- Children Tab -->
+            <div id="children" class="tab-content ">
+                <div class="tabs">
+                    <div class="tab active" onclick="showInnerTab('child-details')">Détails</div>
+                </div>
+                 
+                    <!-- Child Details Modal -->
+                <div id="child-modal" class="moda" >
+                    <div class="modal-content" >
+                        <div class="modal-header">
+                            <h3>Détails Complets de l'Enfant</h3>
+                            
+                        </div>
+                        
+                        <div class="profile-header" style="padding: 20px; border-bottom: 1px solid #eee;">
+                            <img src="https://via.placeholder.com/120" alt="Marie Durand" class="profile-pic" style="width: 120px; height: 120px;">
+                            <div class="profile-info" style="margin-left: 20px;">
+                                <h3 style="font-size: 24px; margin-bottom: 5px;">Marie Durand</h3>
+                                <p style="font-size: 16px; color: var(--parent-color); margin-bottom: 5px;">
+                                    <i class="fas fa-graduation-cap"></i> 4ème B - 12 ans
+                                </p>
+                                <p style="font-size: 14px; color: #777;">
+                                    <i class="fas fa-user-tie"></i> Professeur principal: Prof. Martin
+                                </p>
+                                <div style="margin-top: 10px;">
+                                    <span class="payment-status payment-paid" style="font-size: 12px;">
+                                        <i class="fas fa-check-circle"></i> Dossier complet
+                                    </span>
+                                    <span class="payment-status payment-paid" style="font-size: 12px; margin-left: 10px;">
+                                        <i class="fas fa-euro-sign"></i> À jour financièrement
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px;">
+                            <!-- Colonne de gauche -->
+                            <div>
+                                <div class="detail-card" style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                                    <h4 style="color: var(--dark-color); margin-bottom: 10px; display: flex; align-items: center;">
+                                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i> Informations Scolaires
+                                    </h4>
+                                    <div class="detail-item">
+                                        <label>Date d'inscription</label>
+                                        <p>01/09/2022</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Options choisies</label>
+                                        <p>Latin, Théâtre</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Transport scolaire</label>
+                                        <p>Ligne 12 - Arrêt "Les Écoles"</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Cantine</label>
+                                        <p>Lundi, mercredi, vendredi</p>
+                                    </div>
+                                </div>
+
+                                <div class="detail-card" style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                                    <h4 style="color: var(--dark-color); margin-bottom: 10px; display: flex; align-items: center;">
+                                        <i class="fas fa-heartbeat" style="margin-right: 8px;"></i> Santé
+                                    </h4>
+                                    <div class="detail-item">
+                                        <label>Groupe sanguin</label>
+                                        <p>A+</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Allergies</label>
+                                        <p>Aucune connue</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Médecin traitant</label>
+                                        <p>Dr. Lefèvre - 01 23 45 67 89</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Personne à contacter</label>
+                                        <p>Mme. Durand (Mère) - 06 98 76 54 32</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Colonne de droite -->
+                            <div>
+                                <div class="detail-card" style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                                    <h4 style="color: var(--dark-color); margin-bottom: 10px; display: flex; align-items: center;">
+                                        <i class="fas fa-chart-line" style="margin-right: 8px;"></i> Performances
+                                    </h4>
+                                    <div class="detail-item">
+                                        <label>Moyenne générale</label>
+                                        <p>15.2/20 <span style="color: var(--secondary-color);">(+1.4 vs trimestre dernier)</span></p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Classement</label>
+                                        <p>7ème/28 élèves</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Présence</label>
+                                        <p>92% <span style="color: var(--secondary-color);">(3 absences justifiées)</span></p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Comportement</label>
+                                        <p>
+                                            <span style="color: var(--secondary-color);">8 encouragements</span> / 
+                                            <span style="color: var(--warning-color);">2 avertissements</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="detail-card" style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                                    <h4 style="color: var(--dark-color); margin-bottom: 10px; display: flex; align-items: center;">
+                                        <i class="fas fa-euro-sign" style="margin-right: 8px;"></i> Situation Financière
+                                    </h4>
+                                    <div class="detail-item">
+                                        <label>Frais de scolarité</label>
+                                        <p>450€/trimestre</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Dernier paiement</label>
+                                        <p>450€ le 15/09/2023</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Prochain paiement</label>
+                                        <p>450€ avant le 15/11/2023</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Frais supplémentaires</label>
+                                        <p>Voyage scolaire: 120€ (payé)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="padding: 0 20px 20px;">
+                            <h4 style="color: var(--dark-color); margin-bottom: 10px; display: flex; align-items: center;">
+                                <i class="fas fa-sticky-note" style="margin-right: 8px;"></i> Remarques Spéciales
+                            </h4>
+                            <div style="background: #fff8e1; padding: 15px; border-radius: 5px; border-left: 4px solid var(--warning-color);">
+                                <p style="font-style: italic; color: #555;">
+                                    "Marie montre d'excellentes dispositions en mathématiques. Nous recommandons de l'inscrire 
+                                    au club de mathématiques pour développer son potentiel. En français, quelques difficultés 
+                                    persistent en rédaction - un soutien supplémentaire serait bénéfique."
+                                </p>
+                                <p style="text-align: right; margin-top: 10px; font-size: 13px; color: #777;">
+                                    - Prof. Martin, 10/10/2023
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between;">
+                            <button type="button" class="btn" onclick="hideModal('child-modal')" 
+                                    style="background: #f5f5f5; color: #333;">
+                                <i class="fas fa-times"></i> Fermer
+                            </button>
+                            <div>
+                                <button type="button" class="btn btn-primary" onclick="showTab('messages')">
+                                    <i class="fas fa-envelope"></i> Contacter le professeur
+                                </button>
+                                <button type="button" class="btn btn-success" style="margin-left: 10px;">
+                                    <i class="fas fa-file-pdf"></i> Exporter la fiche
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div id="child-details" class="inner-tab-content">
+                   
+                    <div class="recent-activity" style="margin-top: 20px;">
+                        <h3 class="section-title"><i class="fas fa-clipboard-list"></i> Derniers bulletins</h3>
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Bulletin du 2ème trimestre 2022-2023</h4>
+                                    <p>Moyenne: 14.8/20 - Classement: 5ème/28</p>
+                                </div>
+                                <div class="activity-time">
+                                    <button class="btn btn-primary btn-sm">Télécharger</button>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Bulletin du 1er trimestre 2022-2023</h4>
+                                    <p>Moyenne: 13.5/20 - Classement: 12ème/28</p>
+                                </div>
+                                <div class="activity-time">
+                                    <button class="btn btn-primary btn-sm">Télécharger</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+    
+    
+
+            <!-- Behavior Reports Tab -->
+            <div id="behavior-reports" class="tab-content">
+                <div class="tabs">
+                    <div class="tab active" onclick="showInnerTab('reports-list')">Rapports de Comportement</div>
+                    <div class="tab" onclick="showInnerTab('report-incident')">Signaler un Incident</div>
+                </div>
+                
+                <div id="reports-list" class="inner-tab-content active">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Enfant</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Professeur</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>15/10/2023</td>
+                                <td>Thomas Martin</td>
+                                <td><span class="payment-status payment-paid">Encouragement</span></td>
+                                <td>A aidé un camarade en difficulté</td>
+                                <td>Prof. Dupont</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm">Détails</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10/10/2023</td>
+                                <td>Thomas Martin</td>
+                                <td><span class="payment-status payment-pending">Avertissement</span></td>
+                                <td>Bavardage répété en classe</td>
+                                <td>Prof. Martin</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm">Détails</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="report-incident" class="inner-tab-content">
+                    <div class="recent-activity">
+                        <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> Signaler un Comportement Préoccupant</h3>
+                        <form>
+                            <div class="form-group">
+                                <label>Enfant concerné</label>
+                                <select class="form-control">
+                                    <option>Marie Durand (4ème B)</option>
+                                    <option>Thomas Martin (6ème A)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Type de signalement</label>
+                                <select class="form-control">
+                                    <option>Comportement à la maison</option>
+                                    <option>Problème avec un camarade</option>
+                                    <option>Difficulté particulière</option>
+                                    <option>Autre</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date des faits</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Description détaillée</label>
+                                <textarea class="form-control" rows="5" placeholder="Décrivez le comportement observé..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Demande particulière</label>
+                                <textarea class="form-control" rows="3" placeholder="Que souhaitez-vous que l'école fasse ?"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Envoyer le signalement</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="tabs">
+                    <div class="tab active" onclick="showInnerTab('account-settings')">Compte</div>
+                    <div class="tab" onclick="showInnerTab('notification-settings')">Notifications</div>
+                </div>
+                
+                <div id="account-settings" class="inner-tab-content active">
+                    <div class="recent-activity">
+                        <h3 class="section-title"><i class="fas fa-user-cog"></i> Paramètres du Compte</h3>
+                        <form>
+                            <div class="form-group">
+                                <label>Nom complet</label>
+                                <input type="text" class="form-control" value="Parent Martin">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" value="parent@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Téléphone</label>
+                                <input type="tel" class="form-control" value="06 12 34 56 78">
+                            </div>
+                            <div class="form-group">
+                                <label>Adresse</label>
+                                <textarea class="form-control" rows="2">12 Rue des Écoles, 75000 Paris</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Changer le mot de passe</label>
+                                <input type="password" class="form-control" placeholder="Nouveau mot de passe">
+                                <input type="password" class="form-control" placeholder="Confirmer" style="margin-top: 5px;">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="notification-settings" class="inner-tab-content">
+                    <div class="recent-activity">
+                        <h3 class="section-title"><i class="fas fa-bell"></i> Préférences de Notification</h3>
+                        <form>
+                            <div class="form-group">
+                                <label>Recevoir des notifications par email</label>
+                                <div>
+                                    <input type="checkbox" id="email-grades" checked>
+                                    <label for="email-grades">Nouvelles notes</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="email-absences" checked>
+                                    <label for="email-absences">Absences</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="email-messages">
+                                    <label for="email-messages">Messages</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Recevoir des notifications par SMS</label>
+                                <div>
+                                    <input type="checkbox" id="sms-urgent" checked>
+                                    <label for="sms-urgent">Urgences</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="sms-meetings">
+                                    <label for="sms-meetings">Convocations</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Fréquence des rappels</label>
+                                <select class="form-control">
+                                    <option>Quotidien</option>
+                                    <option selected>Hebdomadaire</option>
+                                    <option>Mensuel</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Enregistrer les préférences</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Detail Modal -->
+    <div id="message-modal" class="modal" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Détail du Message</h3>
+                <span class="close" onclick="hideModal('message-modal')">&times;</span>
+            </div>
+            <div class="recent-activity">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Réunion parents-professeurs</h4>
+                        <p>De: Prof. Martin</p>
+                        <p>Date: 15/10/2023 à 14:30</p>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                    <p>Bonjour,</p>
+                    <p>Je vous informe que la réunion parents-professeurs de la classe de 4ème B aura lieu le 25 octobre 2023 à 17h en salle de réunion.</p>
+                    <p>Cette réunion sera l'occasion de faire le point sur les progrès de votre enfant et de discuter des objectifs pour le trimestre à venir.</p>
+                    <p>Merci de confirmer votre présence par retour de message.</p>
+                    <p>Cordialement,</p>
+                    <p>Prof. Martin</p>
+                </div>
+                
+                <form style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label>Réponse</label>
+                        <textarea class="form-control" rows="3" placeholder="Votre réponse..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideModal('message-modal')">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Envoyer la réponse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Detail Modal --> 
+    <div id="message-modal" class="modal" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Détail du Message</h3>
+                <span class="close" onclick="hideModal('message-modal')">&times;</span>
+            </div>
+            <div class="recent-activity">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Réunion parents-professeurs</h4>
+                        <p>De: Prof. Martin</p>
+                        <p>Date: 15/10/2023 à 14:30</p>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                    <p>Bonjour,</p>
+                    <p>Je vous informe que la réunion parents-professeurs de la classe de 4ème B aura lieu le 25 octobre 2023 à 17h en salle de réunion.</p>
+                    <p>Cette réunion sera l'occasion de faire le point sur les progrès de votre enfant et de discuter des objectifs pour le trimestre à venir.</p>
+                    <p>Merci de confirmer votre présence par retour de message.</p>
+                    <p>Cordialement,</p>
+                    <p>Prof. Martin</p>
+                </div>
+                
+                <form style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label>Réponse</label>
+                        <textarea class="form-control" rows="3" placeholder="Votre réponse..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideModal('message-modal')">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Envoyer la réponse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/parent/script.js')}}">
+       
+    </script>
+</body>
+</html>

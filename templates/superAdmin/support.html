@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/style.css')}}">
+    <style>
+        /* Styles spécifiques à la page de support */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #357abd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .stat-info h3 {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .tickets-list {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .ticket-item {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+
+        .ticket-item:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .ticket-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .ticket-id {
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .ticket-priority, .ticket-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ticket-priority.high {
+            background-color: #fff5f5;
+            color: #e53e3e;
+            border: 1px solid #fed7d7;
+        }
+
+        .ticket-priority.medium {
+            background-color: #fffaf0;
+            color: #dd6b20;
+            border: 1px solid #feebc8;
+        }
+
+        .ticket-priority.low {
+            background-color: #f0fff4;
+            color: #38a169;
+            border: 1px solid #c6f6d5;
+        }
+
+        .ticket-status.open {
+            background-color: #ebf8ff;
+            color: #3182ce;
+            border: 1px solid #bee3f8;
+        }
+
+        .ticket-status.in-progress {
+            background-color: #fffaf0;
+            color: #dd6b20;
+            border: 1px solid #feebc8;
+        }
+
+        .ticket-status.resolved {
+            background-color: #f0fff4;
+            color: #38a169;
+            border: 1px solid #c6f6d5;
+        }
+
+        .ticket-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .ticket-content h3 {
+            margin-bottom: 0.8rem;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+
+        .ticket-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .ticket-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ticket-meta i {
+            color: var(--primary-color);
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ticket-actions .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .ticket-actions .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Modal de ticket */
+        .modal-content {
+            max-width: 800px;
+            border-radius: 15px;
+        }
+
+        .ticket-details {
+            padding: 2rem;
+        }
+
+        .ticket-info {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ticket-description {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        .ticket-responses {
+            margin: 2rem 0;
+        }
+
+        .response {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #eee;
+        }
+
+        .response-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .response-header img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .response-info h4 {
+            margin-bottom: 0.3rem;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .response-info span {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .ticket-reply {
+            margin-top: 2rem;
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .ticket-reply textarea {
+            width: 100%;
+            height: 120px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .ticket-reply textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        /* Responsive Design pour le support */
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .ticket-actions {
+                flex-direction: column;
+            }
+
+            .ticket-actions .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+
+            .ticket-details {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('superadmin_index')}}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('ecolesSuperAd')}}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{url_for('usersSuperAd')}}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{url_for('supportSuperAd')}}" class="active"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{url_for('rapportsSuperAd')}}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{url_for('messagerieSuperAd')}}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('parametresSuperAd')}}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Support</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <div class="stat-info">
+                        <h3>Tickets ouverts</h3>
+                        <p class="stat-number">45</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-info">
+                        <h3>Temps moyen de réponse</h3>
+                        <p class="stat-number">2h</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="stat-info">
+                        <h3>Tickets résolus</h3>
+                        <p class="stat-number">128</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-star"></i>
+                    <div class="stat-info">
+                        <h3>Satisfaction</h3>
+                        <p class="stat-number">4.8/5</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-bar">
+                <div class="filter-group">
+                    <select id="statusFilter">
+                        <option value="all">Tous les statuts</option>
+                        <option value="open">Ouverts</option>
+                        <option value="in-progress">En cours</option>
+                        <option value="resolved">Résolus</option>
+                    </select>
+                    <select id="priorityFilter">
+                        <option value="all">Toutes les priorités</option>
+                        <option value="high">Haute</option>
+                        <option value="medium">Moyenne</option>
+                        <option value="low">Basse</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <input type="text" placeholder="Rechercher un ticket...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <!-- Tickets List -->
+            <div class="tickets-list">
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <span class="ticket-id">#1234</span>
+                        <span class="ticket-priority high">Haute priorité</span>
+                        <span class="ticket-status open">Ouvert</span>
+                    </div>
+                    <div class="ticket-content">
+                        <h3>Problème de connexion à la plateforme</h3>
+                        <p>Les utilisateurs ne peuvent pas se connecter depuis ce matin...</p>
+                    </div>
+                    <div class="ticket-meta">
+                        <span><i class="fas fa-user"></i> Jean Dupont</span>
+                        <span><i class="fas fa-school"></i> École Excellence</span>
+                        <span><i class="fas fa-clock"></i> Il y a 2 heures</span>
+                    </div>
+                    <div class="ticket-actions">
+                        <button class="btn btn-primary" onclick="viewTicket(1234)">
+                            <i class="fas fa-eye"></i> Voir
+                        </button>
+                        <button class="btn btn-success" onclick="assignTicket(1234)">
+                            <i class="fas fa-user-plus"></i> Assigner
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="btn btn-outline"><i class="fas fa-chevron-left"></i></button>
+                <span class="page-number active">1</span>
+                <span class="page-number">2</span>
+                <span class="page-number">3</span>
+                <button class="btn btn-outline"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détails Ticket -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Détails du ticket #1234</h2>
+                <button class="close-modal" onclick="closeTicketModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-details">
+                    <div class="ticket-info">
+                        <h3>Problème de connexion à la plateforme</h3>
+                        <div class="ticket-meta">
+                            <span><i class="fas fa-user"></i> Jean Dupont</span>
+                            <span><i class="fas fa-school"></i> École Excellence</span>
+                            <span><i class="fas fa-clock"></i> Il y a 2 heures</span>
+                        </div>
+                        <div class="ticket-description">
+                            <p>Les utilisateurs ne peuvent pas se connecter depuis ce matin. Le message d'erreur indique "Erreur de serveur".</p>
+                        </div>
+                    </div>
+                    <div class="ticket-responses">
+                        <div class="response">
+                            <div class="response-header">
+                                <img src="https://via.placeholder.com/40" alt="Support">
+                                <div class="response-info">
+                                    <h4>Support Technique</h4>
+                                    <span>Il y a 1 heure</span>
+                                </div>
+                            </div>
+                            <p>Nous avons identifié le problème et travaillons sur une solution.</p>
+                        </div>
+                    </div>
+                    <div class="ticket-reply">
+                        <textarea placeholder="Votre réponse..."></textarea>
+                        <button class="btn btn-primary">Envoyer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+</body>
+</html> 

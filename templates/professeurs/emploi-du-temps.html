@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emploi du temps - Professeur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/prof/style.css') }}">
+    <style>
+        .schedule-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .schedule-nav button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .schedule-nav button:hover {
+            background: var(--secondary-color);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(5, 1fr);
+            gap: 1rem;
+            overflow-x: auto;
+        }
+
+        .time-slot {
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .time-slot.header {
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .time-slot.time {
+            background: #f8f9fa;
+            font-weight: bold;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .course-block {
+            background: white;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .course-block h4 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .course-block p {
+            margin: 0.3rem 0;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .activities-section {
+            margin-top: 2rem;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .activity-icon.meeting {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+        }
+
+        .activity-icon.event {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .activity-icon.duty {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-content h4 {
+            margin: 0;
+            color: var(--secondary-color);
+        }
+
+        .activity-content p {
+            margin: 0.3rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-grid {
+                grid-template-columns: 80px repeat(5, 1fr);
+            }
+
+            .time-slot {
+                min-height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{{ url_for('professeurs_index') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('eleves') }}">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Élèves</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('cours') }}">
+                        <i class="fas fa-book"></i>
+                        <span>Cours</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="{{ url_for('controls') }}">
+                        <i class="fas fa-tasks"></i>
+                        <span>Contrôles</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{{ url_for('professeur_emploi_du_temps') }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Emploi du temps</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('messagerie') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messagerie</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="parametres.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Emploi du temps</h1>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Prof. Dupont</span>
+                </div>
+            </div>
+
+            <div class="schedule-container">
+                <div class="schedule-header">
+                    <h2>Semaine du {{ semaine_actuelle }}</h2>
+                    <div class="schedule-nav">
+                        <button onclick="previousWeek()"><i class="fas fa-chevron-left"></i> Semaine précédente</button>
+                        <button onclick="nextWeek()">Semaine suivante <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="schedule-grid">
+                    <!-- En-têtes des jours -->
+                    <div class="time-slot header"></div>
+                    <div class="time-slot header">Lundi</div>
+                    <div class="time-slot header">Mardi</div>
+                    <div class="time-slot header">Mercredi</div>
+                    <div class="time-slot header">Jeudi</div>
+                    <div class="time-slot header">Vendredi</div>
+
+                    <!-- Horaires et cours -->
+                    {% for horaire in horaires %}
+                    <div class="time-slot time">{{ horaire.heure }}</div>
+                    {% for jour in ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'] %}
+                    <div class="time-slot">
+                        {% if emploi_du_temps[jour][horaire.heure] %}
+                        <div class="course-block">
+                            <h4>{{ emploi_du_temps[jour][horaire.heure].matiere }}</h4>
+                            <p>{{ emploi_du_temps[jour][horaire.heure].classe }}</p>
+                            <p>{{ emploi_du_temps[jour][horaire.heure].salle }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="activities-section">
+                <h2>Activités de la semaine</h2>
+                {% for activite in activites %}
+                <div class="activity-card">
+                    <div class="activity-icon {{ activite.type }}">
+                        <i class="fas {{ activite.icon }}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>{{ activite.titre }}</h4>
+                        <p>{{ activite.description }}</p>
+                        <span class="activity-time">
+                            <i class="fas fa-clock"></i> {{ activite.date }} - {{ activite.heure }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previousWeek() {
+            // Logique pour afficher la semaine précédente
+        }
+
+        function nextWeek() {
+            // Logique pour afficher la semaine suivante
+        }
+    </script>
+</body>
+</html> 

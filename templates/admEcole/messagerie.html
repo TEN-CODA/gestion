@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/ecole/style.css')}}">
+    <style>
+        
+        
+       
+        
+        
+        
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .new-conversation-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .new-conversation-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* Messagerie */
+        .messaging-container {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+        
+        .messages-list {
+            width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow-y: auto;
+        }
+        
+        .message-preview {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .message-preview:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .message-preview.active {
+            background-color: #e3f2fd;
+        }
+        
+        .message-preview.unread {
+            font-weight: bold;
+        }
+        
+        .message-preview-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .message-preview-sender {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .message-preview-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .message-preview-subject {
+            font-size: 14px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-preview-excerpt {
+            font-size: 13px;
+            color: #7f8c8d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-detail {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .message-subject {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .message-sender {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .message-content {
+            flex: 1;
+            padding: 15px 0;
+            line-height: 1.7;
+        }
+        
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .reply-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .no-message-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #7f8c8d;
+            text-align: center;
+        }
+        
+        .no-message-selected i {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .messaging-container {
+                flex-direction: column;
+            }
+            
+            .messages-list {
+                width: 100%;
+            }
+        }
+
+        .communication-switch {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .switch-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .switch-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .switch-btn:hover:not(.active) {
+            background-color: #f5f5f5;
+        }
+
+        .annonce-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .annonce-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .annonce-content {
+            margin-bottom: 15px;
+        }
+
+        .annonce-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .annonce-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Styles pour les modals */
+        .modal {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .date-relative {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .importance-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .importance-normal {
+            background-color: #e0e0e0;
+            color: #666;
+        }
+
+        .importance-important {
+            background-color: #ffd700;
+            color: #856404;
+        }
+
+        .importance-urgent {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .programmee-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        /* Styles pour le bouton flottant */
+        .floating-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-button:hover {
+            transform: scale(1.1);
+            background-color: #2980b9;
+        }
+
+        /* Styles pour la liste des contacts */
+        .contacts-list-modal {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .contact-category {
+            margin-bottom: 20px;
+        }
+
+        .contact-category-title {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .contact-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .contact-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .contact-search {
+            margin-bottom: 20px;
+        }
+
+        .contact-search input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .message-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .message-form .form-group {
+            margin-bottom: 10px;
+        }
+
+        .message-form textarea {
+            resize: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .message-form .btn {
+            float: right;
+        }
+
+        .conversation-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px 0;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: 15px;
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .message-bubble.sent {
+            background-color: var(--primary-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-bubble.received {
+            background-color: #f0f0f0;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-bubble .message-time {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .message-bubble.sent .message-time {
+            text-align: right;
+        }
+
+        .annonce-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .annonce-header h3 i {
+            font-size: 1.2em;
+        }
+        
+        .annonce-badges {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .badge i {
+            font-size: 0.9em;
+        }
+        
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+        
+        .badge-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .annonce-actions .btn i {
+            margin-right: 5px;
+        }
+
+        .date-relative {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .date-relative i {
+            color: #666;
+        }
+
+        /* Ajout des styles CSS pour les icônes et badges */
+        .annonce-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .annonce-header h3 i {
+            font-size: 1.2em;
+        }
+        
+        .annonce-badges {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .badge i {
+            font-size: 0.9em;
+        }
+        
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+        
+        .badge-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .annonce-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .annonce-actions .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .annonce-actions .btn i {
+            font-size: 1em;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .date-relative {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .date-relative i {
+            color: #666;
+        }
+
+        .annonce-card {
+            position: relative;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .annonce-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>École Excellence</h3>
+                <span class="role-badge admin-badge">Admin École</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('indexEcole')}}" onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('elevesAdmEcole')}}" onclick="showTab('students')"><i class="fas fa-user-graduate"></i> Élèves</a></li>
+                    <li><a href="{{url_for('professeursEcole')}}" onclick="showTab('teachers')"><i class="fas fa-chalkboard-teacher"></i> Professeurs</a></li>
+                    <li><a href="{{url_for('classesEcole')}}" onclick="showTab('classes')"><i class="fas fa-school"></i> Classes</a></li>
+                    <li><a href="{{url_for('messagerieEcole')}}" class="active" onclick="showTab('communication')"><i class="fas fa-comments"></i> Communication</a></li>
+                    <li><a href="{{url_for('notesEtBulletinEcole')}}" onclick="showTab('grades')"><i class="fas fa-clipboard-list"></i> Notes & Bulletins</a></li>
+                    <li><a href="{{url_for('PerformancesEcole')}}" onclick="showTab('performance')"><i class="fas fa-chart-line"></i> Performances</a></li>
+                    <li><a href="#" onclick="showTab('meetings')"><i class="fas fa-calendar-check"></i> Convocations</a></li>
+                    <li><a href="{{url_for('contacteSuperAdmEcole')}}" onclick="showTab('superadmin')"><i class="fas fa-headset"></i> Support Superadmin</a></li>
+                </ul>
+                
+                <h4>Autres</h4>
+                <ul>
+                    <li><a href="{{url_for('agendaEcole')}}" ><i class="fas fa-calendar-alt"></i> Agenda</a></li>
+                    <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li><a href="#"><i class="fas fa-file-alt"></i> Rapports</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Messagerie</h1>
+                <div class="header-actions">
+                    
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                        <span>Admin École</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Switch entre Messages et Annonces -->
+            <div class="communication-switch" style="margin-bottom: 20px;">
+                <button class="switch-btn active" onclick="switchView('messages')">
+                    <i class="fas fa-envelope"></i> Messages
+                </button>
+                <button class="switch-btn" onclick="switchView('annonces')">
+                    <i class="fas fa-bullhorn"></i> Annonces
+                </button>
+            </div>
+
+            <!-- Conteneur des Messages -->
+            <div id="messages-container" class="messaging-container">
+                <!-- Liste des messages -->
+                <div class="messages-list" id="messagesList">
+                    <!-- Les messages seront chargés dynamiquement depuis la BDD -->
+                </div>
+
+                <!-- Détail du message -->
+                <div class="message-detail">
+                    <div class="message-header">
+                        <h2 class="message-subject"></h2>
+                        <div class="message-meta">
+                            <span class="message-sender"></span>
+                            <span class="message-time" id="message-time"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="message-content">
+                        <div class="no-message-selected">
+                            <i class="fas fa-envelope-open"></i>
+                            <p>Aucun message sélectionné</p>
+                        </div>
+                    </div>
+                    
+                    <div class="message-actions">
+                        <button id="delete-btn" class="btn btn-danger" style="display: none;">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                    
+                    <!-- Formulaire de message permanent -->
+                    <div class="message-form">
+                        <div class="form-group">
+                            <textarea id="message-input" class="form-control" placeholder="Écrivez votre message ici..." rows="3"></textarea>
+                        </div>
+                        <button id="send-message-btn" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Envoyer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteneur des Annonces -->
+            <div id="annonces-container" class="messaging-container" style="display: none;">
+                <div class="annonces-header" style="margin-bottom: 20px;">
+                    <h2>Gestion des Annonces</h2>
+                    <button class="btn btn-primary" onclick="showNewAnnonceModal()">
+                        <i class="fas fa-plus"></i> Nouvelle Annonce
+                    </button>
+                </div>
+
+                <div class="annonces-list">
+                    <!-- Liste des annonces -->
+                    <div class="annonce-card">
+                        <div class="annonce-header">
+                            <h3>Réunion des parents d'élèves</h3>
+                            <span class="badge badge-primary">Tous les parents</span>
+                        </div>
+                        <div class="annonce-content">
+                            <p>Une réunion des parents d'élèves est prévue le vendredi 15 mars à 18h00 dans la salle polyvalente.</p>
+                        </div>
+                        <div class="annonce-footer">
+                            <span class="date-relative">Publié le 10/03/2024</span>
+                            <div class="annonce-actions">
+                                <button class="btn btn-sm btn-primary">Modifier</button>
+                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ... autres annonces ... -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Nouvelle Annonce -->
+        <div id="newAnnonceModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h3>Nouvelle Annonce</h3>
+                    <span class="close" onclick="hideNewAnnonceModal()">&times;</span>
+                </div>
+                <form id="newAnnonceForm">
+                        <div class="form-group">
+                            <label>Titre de l'annonce</label>
+                        <input type="text" name="titre" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contenu</label>
+                        <textarea name="contenu" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Destinataires</label>
+                        <select name="destinataires" class="form-control" required>
+                            <option value="tous">Toute l'école</option>
+                            <option value="professeurs">Tous les professeurs</option>
+                            <option value="parents">Tous les parents</option>
+                            <option value="eleves">Tous les élèves</option>
+                            <option value="classes">Classes spécifiques</option>
+                        </select>
+                    </div>
+                    <div id="classesSelection" class="form-group" style="display: none;">
+                        <label>Sélectionner les classes</label>
+                        <select name="classes" class="form-control" multiple>
+                            <option value="1">6ème A</option>
+                            <option value="2">6ème B</option>
+                            <option value="3">5ème A</option>
+                            <option value="4">5ème B</option>
+                            <!-- Ajoutez d'autres classes ici -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                        <label>Type de publication</label>
+                        <select name="type_publication" class="form-control" onchange="togglePublicationType(this.value)">
+                            <option value="immediate">Publication immédiate</option>
+                            <option value="programmee">Programmer pour plus tard</option>
+                        </select>
+                    </div>
+                    <div id="datePublicationGroup" class="form-group">
+                            <label>Date de publication</label>
+                        <input type="datetime-local" name="date_publication" class="form-control" required readonly>
+                        </div>
+                    <div id="dateProgrammeeGroup" class="form-group" style="display: none;">
+                        <label>Date programmée</label>
+                        <input type="datetime-local" name="date_programmee" class="form-control" min="">
+                    </div>
+                    <div class="form-group">
+                        <label>Importance</label>
+                        <select name="importance" class="form-control">
+                            <option value="normal">Normal</option>
+                            <option value="important">Important</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div id="rappelGroup" class="form-group" style="display: none;">
+                        <label>Rappel</label>
+                        <select name="rappel" class="form-control">
+                            <option value="aucun">Aucun rappel</option>
+                            <option value="1h">1 heure avant</option>
+                            <option value="1j">1 jour avant</option>
+                            <option value="2j">2 jours avant</option>
+                            <option value="1s">1 semaine avant</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideNewAnnonceModal()">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Publier l'annonce</button>
+                    </div>
+                    </form>
+            </div>
+        </div>
+
+        <!-- Modal Modifier Annonce -->
+        <div id="editAnnonceModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h3>Modifier l'Annonce</h3>
+                    <span class="close" onclick="hideEditAnnonceModal()">&times;</span>
+                            </div>
+                <form id="editAnnonceForm">
+                    <input type="hidden" name="annonce_id" id="edit_annonce_id">
+                    <div class="form-group">
+                        <label>Titre de l'annonce</label>
+                        <input type="text" name="titre" id="edit_titre" class="form-control" required>
+                            </div>
+                    <div class="form-group">
+                        <label>Contenu</label>
+                        <textarea name="contenu" id="edit_contenu" class="form-control" rows="5" required></textarea>
+                            </div>
+                    <div class="form-group">
+                        <label>Destinataires</label>
+                        <select name="destinataires" id="edit_destinataires" class="form-control" required>
+                            <option value="tous">Toute l'école</option>
+                            <option value="professeurs">Tous les professeurs</option>
+                            <option value="parents">Tous les parents</option>
+                            <option value="eleves">Tous les élèves</option>
+                            <option value="classes">Classes spécifiques</option>
+                        </select>
+                </div>
+                    <div id="editClassesSelection" class="form-group" style="display: none;">
+                        <label>Sélectionner les classes</label>
+                        <select name="classes" id="edit_classes" class="form-control" multiple>
+                            <option value="1">6ème A</option>
+                            <option value="2">6ème B</option>
+                            <option value="3">5ème A</option>
+                            <option value="4">5ème B</option>
+                            <!-- Ajoutez d'autres classes ici -->
+                        </select>
+            </div>
+                    <div class="form-group">
+                        <label>Date de publication</label>
+                        <input type="datetime-local" name="date_publication" id="edit_date_publication" class="form-control" required>
+        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideEditAnnonceModal()">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Bouton flottant pour nouvelle conversation -->
+    <button class="floating-button" onclick="showNewConversationModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script>
+        // Ajouter l'ID de l'utilisateur courant
+        const currentUserId = "{{ current_user.id }}";
+
+        // Fonction pour charger les conversations depuis la BDD
+        function loadConversations() {
+            fetch('/api/conversations')
+                .then(response => response.json())
+                .then(conversations => {
+                    const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = '';
+            
+                    if (conversations.length === 0) {
+                        messagesList.innerHTML = `
+                            <div class="no-messages">
+                                <i class="fas fa-inbox"></i>
+                                <p>Aucune conversation</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    conversations.forEach(conv => {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message-preview ${conv.non_lu ? 'unread' : ''}`;
+                        messageElement.dataset.id = conv.id;
+                messageElement.innerHTML = `
+                    <div class="message-preview-header">
+                                <span class="message-preview-sender">${conv.expediteur.username}</span>
+                                <span class="message-preview-time">${formatRelativeDate(conv.date_envoi)}</span>
+                    </div>
+                            <div class="message-preview-subject">${conv.sujet}</div>
+                            <div class="message-preview-excerpt">${conv.contenu.substring(0, 50)}...</div>
+                `;
+                
+                        // Ajouter l'événement de clic pour afficher la conversation
+                messageElement.addEventListener('click', () => {
+                    // Marquer comme lu
+                            if (conv.non_lu) {
+                                fetch(`/api/messages/${conv.id}/lu`, { method: 'POST' })
+                                    .then(() => {
+                                        conv.non_lu = false;
+                    messageElement.classList.remove('unread');
+                                    });
+                            }
+                    
+                            // Afficher la conversation
+                            displayConversation(conv.id);
+                    
+                            // Mettre en surbrillance la conversation sélectionnée
+                    document.querySelectorAll('.message-preview').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    messageElement.classList.add('active');
+                });
+                
+                messagesList.appendChild(messageElement);
+            });
+            
+                    // Afficher la première conversation par défaut
+                    if (conversations.length > 0) {
+                        const firstConversation = messagesList.firstChild;
+                        firstConversation.click();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des conversations:', error);
+                    const messagesList = document.getElementById('messagesList');
+                    messagesList.innerHTML = `
+                        <div class="no-messages">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Erreur lors du chargement des conversations</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // Fonction pour afficher une conversation
+        function displayConversation(conversationId) {
+            fetch(`/api/conversations/${conversationId}`)
+                .then(response => response.json())
+                .then(conversation => {
+                    // Afficher les informations de la conversation
+                    document.querySelector('.message-subject').textContent = conversation.sujet;
+                    document.querySelector('.message-sender').textContent = conversation.expediteur.username;
+                    document.querySelector('.message-time').textContent = formatRelativeDate(conversation.date_envoi);
+                    
+                    // Afficher les messages de la conversation
+                    const messagesContainer = document.createElement('div');
+                    messagesContainer.className = 'conversation-messages';
+                    
+                    conversation.messages.forEach(message => {
+                        const messageBubble = document.createElement('div');
+                        messageBubble.className = `message-bubble ${message.expediteur_id === currentUserId ? 'sent' : 'received'}`;
+                        messageBubble.innerHTML = `
+                            <div class="message-text">${message.contenu}</div>
+                            <div class="message-time">${formatRelativeDate(message.date_envoi)}</div>
+                        `;
+                        messagesContainer.appendChild(messageBubble);
+                    });
+                    
+                    // Remplacer le contenu actuel
+                    const messageContent = document.querySelector('.message-content');
+                    messageContent.innerHTML = '';
+                    messageContent.appendChild(messagesContainer);
+                    
+                    // Faire défiler jusqu'au dernier message
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    
+                    // Afficher le bouton de suppression
+                    document.getElementById('delete-btn').style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement de la conversation:', error);
+                    alert('Erreur lors du chargement de la conversation');
+                });
+        }
+
+        // Charger les conversations au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConversations();
+        });
+
+        function switchView(view) {
+            // Mettre à jour les boutons
+            document.querySelectorAll('.switch-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Afficher le conteneur approprié
+            if (view === 'messages') {
+                document.getElementById('messages-container').style.display = 'flex';
+                document.getElementById('annonces-container').style.display = 'none';
+            } else {
+                document.getElementById('messages-container').style.display = 'none';
+                document.getElementById('annonces-container').style.display = 'block';
+            }
+        }
+
+        function showNewAnnonceModal() {
+            // Définir la date et l'heure actuelles
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            // Formater la date pour l'input datetime-local
+            const currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            
+            // Définir la date dans le formulaire
+            document.querySelector('input[name="date_publication"]').value = currentDateTime;
+            
+            // Afficher le modal
+            document.getElementById('newAnnonceModal').style.display = 'block';
+        }
+
+        function hideNewAnnonceModal() {
+            document.getElementById('newAnnonceModal').style.display = 'none';
+            document.getElementById('newAnnonceForm').reset();
+        }
+
+        function showEditAnnonceModal(annonceId) {
+            console.log('Chargement de l\'annonce:', annonceId);
+            
+            // Afficher un indicateur de chargement
+            const modal = document.getElementById('editAnnonceModal');
+            modal.style.display = 'block';
+            modal.querySelector('.modal-content').innerHTML = `
+                <div class="modal-header">
+                    <h3>Chargement...</h3>
+                    <button class="close" onclick="hideEditAnnonceModal()">&times;</button>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p>Chargement des données de l'annonce...</p>
+                </div>
+            `;
+
+            // Récupérer les données de l'annonce depuis le serveur
+            fetch(`/ecole/annonces/${annonceId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(annonce => {
+                    console.log('Données de l\'annonce reçues:', annonce);
+                    
+                    // Restaurer le contenu du modal
+                    modal.querySelector('.modal-content').innerHTML = `
+                        <div class="modal-header">
+                            <h3>Modifier l'Annonce</h3>
+                            <button class="close" onclick="hideEditAnnonceModal()">&times;</button>
+                        </div>
+                        <form id="editAnnonceForm" onsubmit="editAnnonce(event)">
+                            <input type="hidden" name="annonce_id" value="${annonce.id}">
+                            <div class="form-group">
+                                <label>Titre de l'annonce</label>
+                                <input type="text" name="titre" class="form-control" value="${annonce.titre || ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contenu</label>
+                                <textarea name="contenu" class="form-control" rows="5" required>${annonce.contenu || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Destinataires</label>
+                                <select name="destinataires" class="form-control" required onchange="toggleClassesSelection(this.value)">
+                                    <option value="tous" ${annonce.type_destinataire === 'tous' ? 'selected' : ''}>Toute l'école</option>
+                                    <option value="professeurs" ${annonce.type_destinataire === 'professeurs' ? 'selected' : ''}>Tous les professeurs</option>
+                                    <option value="parents" ${annonce.type_destinataire === 'parents' ? 'selected' : ''}>Tous les parents</option>
+                                    <option value="eleves" ${annonce.type_destinataire === 'eleves' ? 'selected' : ''}>Tous les élèves</option>
+                                    <option value="classes" ${annonce.type_destinataire === 'classes' ? 'selected' : ''}>Classes spécifiques</option>
+                                </select>
+                            </div>
+                            <div id="editClassesSelection" class="form-group" style="display: ${annonce.type_destinataire === 'classes' ? 'block' : 'none'}">
+                                <label>Sélectionner les classes</label>
+                                <select name="classes" id="edit_classes" class="form-control" multiple>
+                                    ${generateClassesOptions(annonce.classes || [])}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date de publication</label>
+                                <input type="datetime-local" name="date_publication" class="form-control" value="${formatDateForInput(annonce.date_publication)}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Importance</label>
+                                <select name="importance" class="form-control">
+                                    <option value="normal" ${annonce.priorite === 'normal' ? 'selected' : ''}>Normal</option>
+                                    <option value="important" ${annonce.priorite === 'important' ? 'selected' : ''}>Important</option>
+                                    <option value="urgent" ${annonce.priorite === 'urgent' ? 'selected' : ''}>Urgent</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="hideEditAnnonceModal()">Annuler</button>
+                                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                            </div>
+                        </form>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Erreur détaillée lors du chargement de l\'annonce:', error);
+                    modal.querySelector('.modal-content').innerHTML = `
+                        <div class="modal-header">
+                            <h3>Erreur</h3>
+                            <button class="close" onclick="hideEditAnnonceModal()">&times;</button>
+                        </div>
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-exclamation-circle fa-2x" style="color: #dc3545;"></i>
+                            <p>Erreur lors du chargement de l'annonce</p>
+                            <small>${error.message}</small>
+                        </div>
+                    `;
+                });
+        }
+
+        function toggleClassesSelection(value) {
+            const classesSelection = document.getElementById('editClassesSelection');
+            classesSelection.style.display = value === 'classes' ? 'block' : 'none';
+        }
+
+        function hideEditAnnonceModal() {
+            document.getElementById('editAnnonceModal').style.display = 'none';
+        }
+
+        function formatRelativeDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (seconds < 60) {
+                return "à l'instant";
+            } else if (minutes < 60) {
+                return `il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            } else if (hours < 24) {
+                return `il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+            } else if (days < 7) {
+                return `il y a ${days} jour${days > 1 ? 's' : ''}`;
+            } else {
+                return date.toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+
+        function getImportanceBadge(importance) {
+            const badges = {
+                normal: '<span class="importance-badge importance-normal">Normal</span>',
+                important: '<span class="importance-badge importance-important">Important</span>',
+                urgent: '<span class="importance-badge importance-urgent">Urgent</span>'
+            };
+            return badges[importance] || badges.normal;
+        }
+
+        // Gestion des formulaires
+        document.getElementById('newAnnonceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/ecole/annonces', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        titre: formData.get('titre'),
+                        contenu: formData.get('contenu'),
+                        destinataires: formData.get('destinataires'),
+                        importance: formData.get('importance'),
+                        date_publication: formData.get('date_publication')
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Annonce publiée avec succès !');
+                    hideNewAnnonceModal();
+                    loadAnnonces(); // Recharger la liste des annonces
+                } else {
+                    alert('Erreur lors de la publication de l\'annonce : ' + data.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la publication de l\'annonce');
+            }
+        });
+
+        // Fonction pour modifier une annonce
+        function editAnnonce(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const annonceId = formData.get('annonce_id');
+            
+            // Convertir les données du formulaire en objet JSON
+            const data = {
+                titre: formData.get('titre'),
+                contenu: formData.get('contenu'),
+                date_publication: formData.get('date_publication'),
+                destinataires: formData.get('destinataires'),
+                importance: formData.get('importance')
+            };
+            
+            // Si des classes sont sélectionnées, les ajouter aux données
+            const classesSelect = document.getElementById('edit_classes');
+            if (data.destinataires === 'classes' && classesSelect) {
+                data.classes = Array.from(classesSelect.selectedOptions).map(option => parseInt(option.value));
+            }
+            
+            console.log('Envoi des données de modification:', data);
+            
+            // Envoyer la requête PUT
+            fetch(`/ecole/annonces/${annonceId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Réponse du serveur:', data);
+                if (data.success) {
+                    alert('Annonce modifiée avec succès');
+                    hideEditAnnonceModal();
+                    loadAnnonces(); // Recharger la liste des annonces
+                } else {
+                    throw new Error(data.error || 'Erreur lors de la modification');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la modification de l\'annonce: ' + error.message);
+            });
+        }
+
+        // Fonction pour supprimer une annonce
+        function deleteAnnonce(annonceId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
+                return;
+            }
+            
+            console.log('Suppression de l\'annonce:', annonceId);
+            
+            fetch(`/ecole/annonces/${annonceId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Réponse du serveur:', data);
+                if (data.success) {
+                    // Supprimer l'élément de l'interface
+                    const annonceCard = document.querySelector(`.annonce-card[data-id="${annonceId}"]`);
+                    if (annonceCard) {
+                        annonceCard.remove();
+                    }
+                    // Recharger la liste des annonces
+                    loadAnnonces();
+                    alert('Annonce supprimée avec succès');
+                } else {
+                    throw new Error(data.error || 'Erreur lors de la suppression');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression de l\'annonce: ' + error.message);
+            });
+        }
+
+        // Attacher l'événement submit au formulaire de modification
+        document.getElementById('editAnnonceForm').addEventListener('submit', editAnnonce);
+
+        // Fonction pour charger les annonces
+        async function loadAnnonces() {
+            try {
+                console.log('Chargement des annonces...');
+                const response = await fetch('/ecole/annonces');
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                
+                const annonces = await response.json();
+                console.log('Annonces reçues:', annonces);
+                
+                const annoncesList = document.querySelector('.annonces-list');
+                annoncesList.innerHTML = '';
+                
+                if (!annonces || annonces.length === 0) {
+                    annoncesList.innerHTML = `
+                        <div class="no-messages">
+                            <i class="fas fa-bullhorn"></i>
+                            <p>Aucune annonce disponible</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                annonces.forEach(annonce => {
+                    console.log('Traitement de l\'annonce:', annonce);
+                    const annonceCard = document.createElement('div');
+                    annonceCard.className = 'annonce-card';
+                    annonceCard.setAttribute('data-id', annonce.id);
+                    const priorite = annonce.priorite || 'normal';
+                    annonceCard.innerHTML = `
+                        <button class="delete-btn" onclick="deleteAnnonce(${annonce.id})" title="Supprimer l'annonce">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                        <div class="annonce-header">
+                            <h3>
+                                ${getPriorityIcon(priorite)}
+                                ${annonce.titre || 'Sans titre'}
+                            </h3>
+                            <div class="annonce-badges">
+                                <span class="badge badge-${getBadgeClass(priorite)}">
+                                    ${getPriorityIcon(priorite)}
+                                    ${getPriorityText(priorite)}
+                                </span>
+                                <span class="badge badge-primary">
+                                    <i class="fas fa-users"></i>
+                                    ${annonce.type_destinataire || 'Tous'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="annonce-content">
+                            <p>${annonce.contenu || ''}</p>
+                        </div>
+                        <div class="annonce-footer">
+                            <span class="date-relative">
+                                <i class="fas fa-clock"></i>
+                                Publié le ${formatDate(annonce.date_publication || new Date())}
+                            </span>
+                            <div class="annonce-actions">
+                                <button class="btn btn-primary" onclick="showEditAnnonceModal(${annonce.id})">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    annoncesList.appendChild(annonceCard);
+                });
+            } catch (error) {
+                console.error('Erreur détaillée lors du chargement des annonces:', error);
+                const annoncesList = document.querySelector('.annonces-list');
+                annoncesList.innerHTML = `
+                    <div class="no-messages">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Erreur lors du chargement des annonces</p>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Fonction pour formater la date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Fonction pour obtenir la classe CSS du badge selon la priorité
+        function getBadgeClass(priorite) {
+            switch (priorite) {
+                case 'urgent':
+                    return 'danger';
+                case 'important':
+                    return 'warning';
+                default:
+                    return 'primary';
+            }
+        }
+
+        // Fonction pour obtenir l'icône selon la priorité
+        function getPriorityIcon(priorite) {
+            switch (priorite) {
+                case 'urgent':
+                    return '<i class="fas fa-exclamation-circle" style="color: #dc3545;"></i>';
+                case 'important':
+                    return '<i class="fas fa-exclamation-triangle" style="color: #ffc107;"></i>';
+                default:
+                    return '<i class="fas fa-info-circle" style="color: #3498db;"></i>';
+            }
+        }
+
+        // Fonction pour obtenir le texte de la priorité
+        function getPriorityText(priorite) {
+            switch (priorite) {
+                case 'urgent':
+                    return 'Urgent';
+                case 'important':
+                    return 'Important';
+                default:
+                    return 'Normal';
+            }
+        }
+
+        // Charger les annonces au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnnonces();
+        });
+
+        // Fermer les modals si on clique en dehors
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Fonction pour afficher le modal de nouvelle conversation
+        function showNewConversationModal() {
+            // Supprimer tout modal existant
+            const existingModal = document.querySelector('.modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Nouvelle conversation</h3>
+                        <button class="close" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="contact-search">
+                        <input type="text" placeholder="Rechercher une personne..." onkeyup="filterContacts(this.value)">
+                    </div>
+                    <div class="contacts-list-modal">
+                        <div class="contact-category">
+                            <div class="contact-category-title">Professeurs</div>
+                            <div class="contact-item" onclick="selectContact(1, 'Prof. Martin', 'Mathématiques')">
+                                <img src="https://via.placeholder.com/40" alt="Prof. Martin" class="contact-avatar">
+                                <div class="contact-info">
+                                    <div class="contact-name">Prof. Martin</div>
+                                    <div class="contact-role">Mathématiques</div>
+                                </div>
+                            </div>
+                            <div class="contact-item" onclick="selectContact(2, 'Prof. Dubois', 'Français')">
+                                <img src="https://via.placeholder.com/40" alt="Prof. Dubois" class="contact-avatar">
+                                <div class="contact-info">
+                                    <div class="contact-name">Prof. Dubois</div>
+                                    <div class="contact-role">Français</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-category">
+                            <div class="contact-category-title">Parents</div>
+                            <div class="contact-item" onclick="selectContact(3, 'M. et Mme Dupont', 'Parents de Jean')">
+                                <img src="https://via.placeholder.com/40" alt="Parents" class="contact-avatar">
+                                <div class="contact-info">
+                                    <div class="contact-name">M. et Mme Dupont</div>
+                                    <div class="contact-role">Parents de Jean</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-category">
+                            <div class="contact-category-title">Élèves</div>
+                            <div class="contact-item" onclick="selectContact(4, 'Jean Dupont', '5ème A')">
+                                <img src="https://via.placeholder.com/40" alt="Jean" class="contact-avatar">
+                                <div class="contact-info">
+                                    <div class="contact-name">Jean Dupont</div>
+                                    <div class="contact-role">5ème A</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        </div>
+                    `;
+            document.body.appendChild(modal);
+
+            // Fermer le modal si on clique en dehors
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Fonction pour filtrer les contacts
+        function filterContacts(searchTerm) {
+            const contactItems = document.querySelectorAll('.contact-item');
+            searchTerm = searchTerm.toLowerCase();
+            
+            contactItems.forEach(item => {
+                const name = item.querySelector('.contact-name').textContent.toLowerCase();
+                const role = item.querySelector('.contact-role').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || role.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Fonction pour sélectionner un contact
+        function selectContact(id, name, role) {
+            // Supprimer le modal de sélection des contacts
+            const existingModal = document.querySelector('.modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Nouvelle conversation avec ${name}</h3>
+                        <button class="close" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <form id="newConversationForm">
+                        <input type="hidden" name="recipient_id" value="${id}">
+                        <div class="form-group">
+                            <label for="subject">Sujet</label>
+                            <input type="text" id="subject" name="sujet" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" class="form-control" rows="6" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Envoyer
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Fermer le modal si on clique en dehors
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+
+            // Gestion de l'envoi du formulaire
+            document.getElementById('newConversationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = {
+                    destinataire_id: id,
+                    sujet: document.getElementById('subject').value,
+                    message: document.getElementById('message').value
+                };
+
+                // Envoyer le message au serveur
+                fetch('/ecole/messages/nouveau', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Message envoyé avec succès !');
+                        modal.remove();
+                        // Recharger la liste des messages
+                        loadConversations();
+                    } else {
+                        alert('Erreur lors de l\'envoi du message : ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de l\'envoi du message');
+                });
+            });
+        }
+
+        // Gestion de l'envoi du message
+        document.getElementById('send-message-btn').addEventListener('click', function() {
+            const messageContent = document.getElementById('message-input').value.trim();
+            
+            if (messageContent === '') {
+                alert('Veuillez écrire un message avant d\'envoyer');
+                return;
+            }
+            
+            // Envoyer le message
+            fetch('/ecole/messages/nouveau', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    destinataire_id: 1, // ID du destinataire (à adapter)
+                    sujet: document.querySelector('.message-subject').textContent,
+                    message: messageContent
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Vider le champ de message
+                    document.getElementById('message-input').value = '';
+                    // Recharger la liste des messages
+                    loadConversations();
+                } else {
+                    alert('Erreur lors de l\'envoi du message : ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'envoi du message');
+            });
+        });
+
+        // Mettre à jour l'heure du message (il y a 2 heures)
+        const twoHoursAgo = new Date();
+        twoHoursAgo.setHours(twoHoursAgo.getHours() - 2);
+        document.getElementById('message-time').textContent = formatRelativeDate(twoHoursAgo.toISOString());
+
+        // Gestion du clic sur une conversation
+        document.querySelectorAll('.message-preview').forEach(preview => {
+            preview.addEventListener('click', function() {
+                // Retirer la classe active de tous les messages
+                document.querySelectorAll('.message-preview').forEach(p => p.classList.remove('active'));
+                // Ajouter la classe active au message cliqué
+                this.classList.add('active');
+                // Retirer la classe unread
+                this.classList.remove('unread');
+            });
+        });
+
+        // Fonction utilitaire pour générer les options des classes
+        function generateClassesOptions(selectedClasses) {
+            const classes = [
+                { id: 1, nom: '6ème A' },
+                { id: 2, nom: '6ème B' },
+                { id: 3, nom: '5ème A' },
+                { id: 4, nom: '5ème B' }
+                // Ajoutez d'autres classes ici
+            ];
+            
+            return classes.map(classe => `
+                <option value="${classe.id}" ${selectedClasses.includes(classe.id) ? 'selected' : ''}>
+                    ${classe.nom}
+                </option>
+            `).join('');
+        }
+
+        // Fonction utilitaire pour formater la date pour l'input datetime-local
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toISOString().slice(0, 16);
+        }
+    </script>
+</body>
+</html>

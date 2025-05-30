@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/style.css')}}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Styles spécifiques au tableau de bord */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #357abd);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #357abd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .stat-info h3 {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-trend.positive {
+            color: #38a169;
+        }
+
+        .stat-trend.negative {
+            color: #e53e3e;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-card h3 {
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+
+        .chart-card canvas {
+            flex: 1;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .activity-list {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .activity-list h3 {
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .activity-icon.user {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+        }
+
+        .activity-icon.school {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .activity-icon.support {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .activity-icon.system {
+            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-content h4 {
+            margin-bottom: 0.3rem;
+            color: var(--secondary-color);
+            font-size: 1rem;
+        }
+
+        .activity-content p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .action-card h3 {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .recent-schools {
+            margin-top: 2rem;
+        }
+
+        .recent-schools h2 {
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .school-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .school-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .school-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .school-card h3 {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .school-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .school-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .school-stats span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .school-stats i {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Design pour le tableau de bord */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('superadmin_index')}}" class="active"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('ecolesSuperAd')}}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{url_for('usersSuperAd')}}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{url_for('supportSuperAd')}}"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{url_for('rapportsSuperAd')}}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{url_for('messagerieSuperAd')}}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('parametresSuperAd')}}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Tableau de bord</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="{{ url_for('ajoutEcoleSuperAd') }}" class="action-card">
+                    <i class="fas fa-school"></i>
+                    <h3>Ajouter une école</h3>
+                    <p>Créer une nouvelle école dans le système</p>
+                </a>
+                <a href="{{ url_for('ajoutUtilisateurSuperAd') }}" class="action-card">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Ajouter un utilisateur</h3>
+                    <p>Créer un nouveau compte utilisateur</p>
+                </a>
+                <a href="{{ url_for('ajoutTicketSuperAd') }}" class="action-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>Créer un ticket</h3>
+                    <p>Ouvrir un nouveau ticket de support</p>
+                </a>
+                <a href="{{ url_for('genererRapportSuperAd') }}" class="action-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Générer un rapport</h3>
+                    <p>Créer un nouveau rapport système</p>
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <i class="fas fa-school"></i>
+                    <div class="stat-info">
+                        <h3>Total Écoles</h3>
+                        <div class="stat-number">{{ total_ecoles }}</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-info">
+                        <h3>Total Utilisateurs</h3>
+                        <div class="stat-number">{{ total_users }}</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <div class="stat-info">
+                        <h3>Total Professeurs</h3>
+                        <div class="stat-number">{{ total_professeurs }}</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <div class="stat-info">
+                        <h3>Total Élèves</h3>
+                        <div class="stat-number">{{ total_eleves }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <div class="chart-card">
+                    <h3>Statistiques des Écoles</h3>
+                    <canvas id="schoolsChart"></canvas>
+                </div>
+                <div class="activity-list">
+                    <h3>Activité Récente</h3>
+                    {% for user in recent_users %}
+                    <div class="activity-item">
+                        <div class="activity-icon user">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>{{ user.username }}</h4>
+                            <p>{{ user.role }}</p>
+                            <span class="activity-time">{{ user.last_login.strftime('%d/%m/%Y %H:%M') if user.last_login else 'Jamais' }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Répartition des Utilisateurs par Rôle</h3>
+                <canvas id="usersChart"></canvas>
+            </div>
+
+            <!-- Écoles récemment ajoutées -->
+            <div class="recent-schools">
+                <h2>Écoles récentes</h2>
+                <div class="schools-grid">
+                    {% for ecole in recent_ecoles %}
+                    <div class="school-card">
+                        <h3>{{ ecole.nom }}</h3>
+                        <p>Ajoutée le {{ ecole.date_creation.strftime('%d/%m/%Y') }}</p>
+                        <div class="school-stats">
+                            <span><i class="fas fa-users"></i> {{ ecoles_stats[loop.index0].total_eleves }} élèves</span>
+                            <span><i class="fas fa-chalkboard-teacher"></i> {{ ecoles_stats[loop.index0].total_professeurs }} professeurs</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+    <script>
+        // Graphique des statistiques des écoles
+        const schoolsCtx = document.getElementById('schoolsChart').getContext('2d');
+        new Chart(schoolsCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ ecoles_stats|map(attribute='nom')|list|tojson }},
+                datasets: [{
+                    label: 'Élèves',
+                    data: {{ ecoles_stats|map(attribute='total_eleves')|list|tojson }},
+                    backgroundColor: 'rgba(74, 144, 226, 0.5)',
+                    borderColor: 'rgba(74, 144, 226, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Professeurs',
+                    data: {{ ecoles_stats|map(attribute='total_professeurs')|list|tojson }},
+                    backgroundColor: 'rgba(46, 204, 113, 0.5)',
+                    borderColor: 'rgba(46, 204, 113, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Classes',
+                    data: {{ ecoles_stats|map(attribute='total_classes')|list|tojson }},
+                    backgroundColor: 'rgba(241, 196, 15, 0.5)',
+                    borderColor: 'rgba(241, 196, 15, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Graphique de répartition des utilisateurs
+        const usersCtx = document.getElementById('usersChart').getContext('2d');
+        new Chart(usersCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Super Admin', 'Admin', 'Professeur', 'Élève', 'Parent'],
+                datasets: [{
+                    data: [
+                        {{ users_by_role.superadmin }},
+                        {{ users_by_role.admin }},
+                        {{ users_by_role.professeur }},
+                        {{ users_by_role.eleve }},
+                        {{ users_by_role.parent }}
+                    ],
+                    backgroundColor: [
+                        'rgba(74, 144, 226, 0.5)',
+                        'rgba(46, 204, 113, 0.5)',
+                        'rgba(241, 196, 15, 0.5)',
+                        'rgba(155, 89, 182, 0.5)',
+                        'rgba(231, 76, 60, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(74, 144, 226, 1)',
+                        'rgba(46, 204, 113, 1)',
+                        'rgba(241, 196, 15, 1)',
+                        'rgba(155, 89, 182, 1)',
+                        'rgba(231, 76, 60, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

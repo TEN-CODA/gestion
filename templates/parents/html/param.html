@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Parent - École Excellence</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/parent/style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>École Excellence</h3>
+                <span class="role-badge parent-badge">Parent</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('indexParent')}}"  onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('enfantParent')}}"  onclick="showTab('children')"><i class="fas fa-child"></i> Mes Enfants</a></li>
+                    <li><a href="{{url_for('paiementsParent')}}" onclick="showTab('payments')"><i class="fas fa-money-bill-wave"></i> Paiements</a></li>
+                    <li><a href="{{url_for('messagerieParent')}}" onclick="showTab('messages')"><i class="fas fa-comments"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('performanceParent')}}" onclick="showTab('performance')"><i class="fas fa-chart-line"></i> Performances</a></li>
+                    <li><a href="{{url_for('horaireParent')}}" onclick="showTab('schedule')"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                    <li><a href="#" onclick="showTab('exams')"><i class="fas fa-clipboard-list"></i> Contrôles</a></li>
+                    <li><a href="{{url_for('calendrierParent')}}"  onclick="showTab('calendar')"><i class="fas fa-calendar-check"></i> Calendrier</a></li>
+                </ul>
+                
+                <h4>Autres</h4>
+                <ul>
+                    <li><a href="#" onclick="showTab('absences')"><i class="fas fa-user-times"></i> Absences</a></li>
+                    <li><a href="#" onclick="showTab('behavior')"><i class="fas fa-exclamation-triangle"></i> Comportement</a></li>
+                    <li><a href="{{url_for('notificationsParent')}}"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li><a href="{{url_for('parametreParent')}}" class="active" ><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="page-title">Détails</h2>
+                <div class="user-info">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Parent Martin</span>
+                </div>
+            </div>
+            
+           
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="tabs">
+                    <div class="tab active" onclick="showInnerTab('account-settings')">Compte</div>
+                    <div class="tab" onclick="showInnerTab('notification-settings')">Notifications</div>
+                </div>
+                
+                <div id="account-settings" class="inner-tab-content active">
+                    <div class="recent-activity">
+                        <h3 class="section-title"><i class="fas fa-user-cog"></i> Paramètres du Compte</h3>
+                        <form>
+                            <div class="form-group">
+                                <label>Nom complet</label>
+                                <input type="text" class="form-control" value="Parent Martin">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" value="parent@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Téléphone</label>
+                                <input type="tel" class="form-control" value="06 12 34 56 78">
+                            </div>
+                            <div class="form-group">
+                                <label>Adresse</label>
+                                <textarea class="form-control" rows="2">12 Rue des Écoles, 75000 Paris</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Changer le mot de passe</label>
+                                <input type="password" class="form-control" placeholder="Nouveau mot de passe">
+                                <input type="password" class="form-control" placeholder="Confirmer" style="margin-top: 5px;">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="notification-settings" class="inner-tab-content">
+                    <div class="recent-activity">
+                        <h3 class="section-title"><i class="fas fa-bell"></i> Préférences de Notification</h3>
+                        <form>
+                            <div class="form-group">
+                                <label>Recevoir des notifications par email</label>
+                                <div>
+                                    <input type="checkbox" id="email-grades" checked>
+                                    <label for="email-grades">Nouvelles notes</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="email-absences" checked>
+                                    <label for="email-absences">Absences</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="email-messages">
+                                    <label for="email-messages">Messages</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Recevoir des notifications par SMS</label>
+                                <div>
+                                    <input type="checkbox" id="sms-urgent" checked>
+                                    <label for="sms-urgent">Urgences</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="sms-meetings">
+                                    <label for="sms-meetings">Convocations</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Fréquence des rappels</label>
+                                <select class="form-control">
+                                    <option>Quotidien</option>
+                                    <option selected>Hebdomadaire</option>
+                                    <option>Mensuel</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Enregistrer les préférences</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+        </div>
+    </div>
+    
+    
+
+            
+            
+            
+            
+       
+
+   
+
+    <script src="{{url_for('static',filename='js/parent/script.js')}}">
+       
+    </script>
+</body>
+</html>

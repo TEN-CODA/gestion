@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Contrôles - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/prof/style.css')}}">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info img {
+            border-radius: 50%;
+        }
+        
+        .class-selector {
+            margin-bottom: 20px;
+        }
+        
+        .class-selector select {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        
+        /* Onglets */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Table */
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        /* Boutons */
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        /* Formulaire */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{{ url_for('professeurs_index') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('eleves') }}">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Élèves</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('cours') }}">
+                        <i class="fas fa-book"></i>
+                        <span>Cours</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{{ url_for('controls') }}">
+                        <i class="fas fa-tasks"></i>
+                        <span>Contrôles</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('professeur_emploi_du_temps') }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Emploi du temps</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('messagerie') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messagerie</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="parametres.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Gestion des Contrôles</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Prof. Dupont</span>
+                </div>
+            </div>
+
+            <!-- Sélecteur de classe -->
+            <div class="class-selector">
+                <select id="class-select">
+                    <option value="CM1A">CM1 - Classe A</option>
+                    <option value="CM2B">CM2 - Classe B</option>
+                    <option value="CE2C">CE2 - Classe C</option>
+                </select>
+            </div>
+
+            <!-- Onglets -->
+            <div class="tabs">
+                <div class="tab active" onclick="openTab(event, 'upcoming')">À venir</div>
+                <div class="tab" onclick="openTab(event, 'completed')">Terminés</div>
+                <div class="tab" onclick="openTab(event, 'all')">Tous</div>
+            </div>
+
+            <!-- Contenu des onglets -->
+            <div id="upcoming" class="tab-content active">
+                <div class="table-container">
+                    <table id="upcoming-assessments">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matière</th>
+                                <th>Type</th>
+                                <th>Durée</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rempli dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="completed" class="tab-content">
+                <div class="table-container">
+                    <table id="completed-assessments">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matière</th>
+                                <th>Type</th>
+                                <th>Moyenne</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rempli dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="all" class="tab-content">
+                <div class="table-container">
+                    <table id="all-assessments">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matière</th>
+                                <th>Type</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rempli dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Formulaire de création -->
+            <div class="table-container">
+                <h2>Programmer un nouveau contrôle</h2>
+                <form id="createAssessmentForm">
+                    <div class="form-group">
+                        <label for="assessmentSubject">Matière</label>
+                        <select id="assessmentSubject" class="form-control" required>
+                            <option value="">Sélectionner une matière</option>
+                            <option value="math">Mathématiques</option>
+                            <option value="french">Français</option>
+                            <option value="history">Histoire</option>
+                            <option value="science">Sciences</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assessmentType">Type</label>
+                        <select id="assessmentType" class="form-control" required>
+                            <option value="">Sélectionner un type</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="test">Interrogation</option>
+                            <option value="exam">Examen</option>
+                            <option value="project">Projet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assessmentDate">Date</label>
+                        <input type="date" id="assessmentDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="assessmentDuration">Durée (minutes)</label>
+                        <input type="number" id="assessmentDuration" class="form-control" min="5" max="180">
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des contrôles par classe
+        const assessmentsData = {
+            'CM1A': {
+                upcoming: [
+                    { id: 1, date: '18/05/2023', subject: 'Mathématiques', type: 'Interrogation', duration: 30, status: 'Planifié' },
+                    { id: 2, date: '20/05/2023', subject: 'Français', type: 'Quiz', duration: 20, status: 'Planifié' }
+                ],
+                completed: [
+                    { id: 3, date: '10/05/2023', subject: 'Histoire', type: 'Examen', average: 14.2, status: 'Corrigé' },
+                    { id: 4, date: '05/05/2023', subject: 'Sciences', type: 'Projet', average: 16.5, status: 'Corrigé' }
+                ]
+            },
+            'CM2B': {
+                upcoming: [
+                    { id: 5, date: '19/05/2023', subject: 'Mathématiques', type: 'Examen', duration: 60, status: 'Planifié' }
+                ],
+                completed: [
+                    { id: 6, date: '12/05/2023', subject: 'Français', type: 'Interrogation', average: 12.8, status: 'Corrigé' }
+                ]
+            },
+            'CE2C': {
+                upcoming: [],
+                completed: [
+                    { id: 7, date: '08/05/2023', subject: 'Mathématiques', type: 'Quiz', average: 15.0, status: 'Corrigé' },
+                    { id: 8, date: '03/05/2023', subject: 'Français', type: 'Interrogation', average: 13.7, status: 'Corrigé' }
+                ]
+            }
+        };
+
+        // Éléments DOM
+        const classSelect = document.getElementById('class-select');
+        const upcomingTable = document.querySelector('#upcoming-assessments tbody');
+        const completedTable = document.querySelector('#completed-assessments tbody');
+        const allTable = document.querySelector('#all-assessments tbody');
+        const createForm = document.getElementById('createAssessmentForm');
+
+        // Afficher les contrôles
+        function displayAssessments(classId) {
+            const data = assessmentsData[classId] || { upcoming: [], completed: [] };
+            
+            // Contrôles à venir
+            upcomingTable.innerHTML = '';
+            data.upcoming.forEach(assessment => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${assessment.date}</td>
+                    <td>${assessment.subject}</td>
+                    <td>${assessment.type}</td>
+                    <td>${assessment.duration} min</td>
+                    <td><span class="badge badge-primary">${assessment.status}</span></td>
+                    <td>
+                        <a href="{{url_for('saisieNotes')}}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i> Saisir notes
+                        </a>
+                        <button class="btn btn-primary btn-sm edit-btn" data-id="${assessment.id}">
+                            <i class="fas fa-pencil-alt"></i> Modifier
+                        </button>
+                    </td>
+                `;
+                upcomingTable.appendChild(row);
+            });
+            
+            // Contrôles terminés
+            completedTable.innerHTML = '';
+            data.completed.forEach(assessment => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${assessment.date}</td>
+                    <td>${assessment.subject}</td>
+                    <td>${assessment.type}</td>
+                    <td>${assessment.average}</td>
+                    <td><span class="badge badge-success">${assessment.status}</span></td>
+                    <td>
+                        <a href="resultats.html?assessment=${assessment.id}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-chart-bar"></i> Résultats
+                        </a>
+                    </td>
+                `;
+                completedTable.appendChild(row);
+            });
+            
+            // Tous les contrôles
+            allTable.innerHTML = '';
+            [...data.upcoming, ...data.completed].forEach(assessment => {
+                const row = document.createElement('tr');
+                const isCompleted = data.completed.some(a => a.id === assessment.id);
+                row.innerHTML = `
+                    <td>${assessment.date}</td>
+                    <td>${assessment.subject}</td>
+                    <td>${assessment.type}</td>
+                    <td><span class="badge ${isCompleted ? 'badge-success' : 'badge-primary'}">
+                        ${isCompleted ? 'Terminé' : 'À venir'}
+                    </span></td>
+                    <td>
+                        ${isCompleted ? 
+                            `<a href="resultats.html?assessment=${assessment.id}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-chart-bar"></i> Résultats
+                            </a>` : 
+                            `<a href="saisie-notes.html?assessment=${assessment.id}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Saisir notes
+                            </a>`
+                        }
+                    </td>
+                `;
+                allTable.appendChild(row);
+            });
+        }
+
+        // Gestion des onglets
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            const tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Gestion du formulaire
+        createForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const subject = document.getElementById('assessmentSubject').value;
+            const type = document.getElementById('assessmentType').value;
+            const date = document.getElementById('assessmentDate').value;
+            const duration = document.getElementById('assessmentDuration').value;
+            
+            // Ici, vous enverriez normalement les données au serveur
+            console.log('Nouveau contrôle:', { subject, type, date, duration });
+            
+            alert('Contrôle programmé avec succès !');
+            this.reset();
+            
+            // Pour l'exemple, on simule l'ajout
+            const classId = classSelect.value;
+            if (!assessmentsData[classId]) assessmentsData[classId] = { upcoming: [], completed: [] };
+            
+            const newId = Math.max(0, ...assessmentsData[classId].upcoming.map(a => a.id), 
+                          ...assessmentsData[classId].completed.map(a => a.id)) + 1;
+            
+            assessmentsData[classId].upcoming.push({
+                id: newId,
+                date: new Date(date).toLocaleDateString('fr-FR'),
+                subject: document.getElementById('assessmentSubject').options[document.getElementById('assessmentSubject').selectedIndex].text,
+                type: document.getElementById('assessmentType').options[document.getElementById('assessmentType').selectedIndex].text,
+                duration: duration,
+                status: 'Planifié'
+            });
+            
+            displayAssessments(classId);
+        });
+
+        // Gestion du changement de classe
+        classSelect.addEventListener('change', function() {
+            displayAssessments(this.value);
+        });
+
+        // Initialisation
+        displayAssessments(classSelect.value);
+    </script>
+</body>
+</html>

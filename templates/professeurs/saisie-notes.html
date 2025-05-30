@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saisie des Notes - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/prof/style.css')}}">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info img {
+            border-radius: 50%;
+        }
+        
+        .assessment-info {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .assessment-info h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        /* Table */
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        /* Boutons */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Commentaires */
+        .comments {
+            margin-top: 20px;
+        }
+        
+        .comments textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{{ url_for('professeurs_index') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('eleves') }}">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Élèves</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('cours') }}">
+                        <i class="fas fa-book"></i>
+                        <span>Cours</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{{ url_for('controls') }}">
+                        <i class="fas fa-tasks"></i>
+                        <span>Contrôles</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('professeur_emploi_du_temps') }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Emploi du temps</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('messagerie') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messagerie</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="parametres.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Saisie des Notes</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Prof. Dupont</span>
+                </div>
+            </div>
+
+            <!-- Informations sur le contrôle -->
+            <div class="assessment-info">
+                <h2 id="assessment-title">Contrôle de Mathématiques</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Classe</strong>
+                        <span id="assessment-class">CM1 - Classe A</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Date</strong>
+                        <span id="assessment-date">18/05/2023</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Type</strong>
+                        <span id="assessment-type">Interrogation</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Durée</strong>
+                        <span id="assessment-duration">30 minutes</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des élèves avec notes -->
+            <div class="table-container">
+                <table id="grades-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Note (/20)</th>
+                            <th>Appréciation</th>
+                            <th>Absent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-list">
+                        <!-- Rempli dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Commentaires généraux -->
+            <div class="table-container comments">
+                <h3>Commentaires généraux</h3>
+                <textarea id="general-comments" placeholder="Ajoutez des commentaires généraux sur ce contrôle..."></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions">
+                <button id="save-draft-btn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Enregistrer brouillon
+                </button>
+                <button id="publish-btn" class="btn btn-success">
+                    <i class="fas fa-check"></i> Publier les notes
+                </button>
+                <button id="cancel-btn" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des élèves (simulées)
+        const studentsData = [
+            { id: 1, lastName: "Dupont", firstName: "Jean", grade: "", comment: "", absent: false },
+            { id: 2, lastName: "Martin", firstName: "Marie", grade: "", comment: "", absent: false },
+            { id: 3, lastName: "Durand", firstName: "Pierre", grade: "", comment: "", absent: false },
+            { id: 4, lastName: "Lambert", firstName: "Sophie", grade: "", comment: "", absent: false },
+            { id: 5, lastName: "Moreau", firstName: "Thomas", grade: "", comment: "", absent: false },
+            { id: 6, lastName: "Petit", firstName: "Laura", grade: "", comment: "", absent: false }
+        ];
+
+        // Récupérer l'ID du contrôle depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const assessmentId = urlParams.get('assessment');
+
+        // Éléments DOM
+        const studentsList = document.getElementById('students-list');
+        const saveDraftBtn = document.getElementById('save-draft-btn');
+        const publishBtn = document.getElementById('publish-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        // Charger les informations du contrôle (simulé)
+        function loadAssessmentInfo() {
+            // En réalité, vous feriez une requête au serveur avec l'ID
+            const assessmentData = {
+                title: "Contrôle de Mathématiques",
+                class: "CM1 - Classe A",
+                date: "18/05/2023",
+                type: "Interrogation",
+                duration: "30 minutes"
+            };
+            
+            document.getElementById('assessment-title').textContent = assessmentData.title;
+            document.getElementById('assessment-class').textContent = assessmentData.class;
+            document.getElementById('assessment-date').textContent = assessmentData.date;
+            document.getElementById('assessment-type').textContent = assessmentData.type;
+            document.getElementById('assessment-duration').textContent = assessmentData.duration;
+        }
+
+        // Afficher la liste des élèves avec les champs de saisie
+        function displayStudents() {
+            studentsList.innerHTML = '';
+            
+            studentsData.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.lastName}</td>
+                    <td>${student.firstName}</td>
+                    <td>
+                        <input type="number" id="grade-${student.id}" 
+                               min="0" max="20" step="0.5" 
+                               value="${student.grade}" 
+                               ${student.absent ? 'disabled' : ''}>
+                    </td>
+                    <td>
+                        <input type="text" id="comment-${student.id}" 
+                               value="${student.comment}" 
+                               placeholder="Commentaire...">
+                    </td>
+                    <td>
+                        <input type="checkbox" id="absent-${student.id}" 
+                               ${student.absent ? 'checked' : ''}>
+                    </td>
+                `;
+                studentsList.appendChild(row);
+                
+                // Gérer le changement d'état "absent"
+                document.getElementById(`absent-${student.id}`).addEventListener('change', function() {
+                    document.getElementById(`grade-${student.id}`).disabled = this.checked;
+                    if (this.checked) {
+                        document.getElementById(`grade-${student.id}`).value = '';
+                    }
+                });
+            });
+        }
+
+        // Enregistrer les notes (brouillon)
+        saveDraftBtn.addEventListener('click', function() {
+            // Collecter les données
+            const grades = [];
+            studentsData.forEach(student => {
+                grades.push({
+                    id: student.id,
+                    grade: document.getElementById(`grade-${student.id}`).value,
+                    comment: document.getElementById(`comment-${student.id}`).value,
+                    absent: document.getElementById(`absent-${student.id}`).checked
+                });
+            });
+            
+            const generalComments = document.getElementById('general-comments').value;
+            
+            // Ici, vous enverriez normalement les données au serveur
+            console.log('Brouillon enregistré:', { assessmentId, grades, generalComments });
+            
+            alert('Brouillon enregistré avec succès !');
+        });
+
+        // Publier les notes
+        publishBtn.addEventListener('click', function() {
+            if (confirm('Êtes-vous sûr de vouloir publier ces notes ? Cette action est définitive.')) {
+                // Collecter les données
+                const grades = [];
+                studentsData.forEach(student => {
+                    grades.push({
+                        id: student.id,
+                        grade: document.getElementById(`grade-${student.id}`).value,
+                        comment: document.getElementById(`comment-${student.id}`).value,
+                        absent: document.getElementById(`absent-${student.id}`).checked
+                    });
+                });
+                
+                const generalComments = document.getElementById('general-comments').value;
+                
+                // Ici, vous enverriez normalement les données au serveur
+                console.log('Notes publiées:', { assessmentId, grades, generalComments });
+                
+                alert('Notes publiées avec succès !');
+                window.location.href = 'controles.html';
+            }
+        });
+
+        // Annuler
+        cancelBtn.addEventListener('click', function() {
+            if (confirm('Voulez-vous vraiment annuler ? Toutes les modifications non enregistrées seront perdues.')) {
+                window.location.href = 'controles.html';
+            }
+        });
+
+        // Initialisation
+        loadAssessmentInfo();
+        displayStudents();
+    </script>
+</body>
+</html>

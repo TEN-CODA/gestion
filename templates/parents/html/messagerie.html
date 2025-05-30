@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Parent - École Excellence</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/parent/style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>École Excellence</h3>
+                <span class="role-badge parent-badge">Parent</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('indexParent')}}"  onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('enfantParent')}}"  onclick="showTab('children')"><i class="fas fa-child"></i> Mes Enfants</a></li>
+                    <li><a href="{{url_for('paiementsParent')}}" onclick="showTab('payments')"><i class="fas fa-money-bill-wave"></i> Paiements</a></li>
+                    <li><a href="{{url_for('messagerieParent')}}" class="active" onclick="showTab('messages')"><i class="fas fa-comments"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('performanceParent')}}" onclick="showTab('performance')"><i class="fas fa-chart-line"></i> Performances</a></li>
+                    <li><a href="{{url_for('horaireParent')}}" onclick="showTab('schedule')"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                    <li><a href="#" onclick="showTab('exams')"><i class="fas fa-clipboard-list"></i> Contrôles</a></li>
+                    <li><a href="{{url_for('calendrierParent')}}"  onclick="showTab('calendar')"><i class="fas fa-calendar-check"></i> Calendrier</a></li>
+                </ul>
+                
+                <h4>Autres</h4>
+                <ul>
+                    <li><a href="#" onclick="showTab('absences')"><i class="fas fa-user-times"></i> Absences</a></li>
+                    <li><a href="#" onclick="showTab('behavior')"><i class="fas fa-exclamation-triangle"></i> Comportement</a></li>
+                    <li><a href="{{url_for('notificationsParent')}}"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li><a href="{{url_for('parametreParent')}}" ><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="page-title">Messagerie</h2>
+                <div class="user-info">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Parent Martin</span>
+                </div>
+            </div>
+           
+            <!-- Messagerie Content -->
+            <div class="messaging-container">
+                <!-- Liste des messages -->
+                <div class="messages-list">
+                    <div class="message-preview unread active">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">Parents de Jean Dupont</span>
+                            <span class="message-preview-time">Aujourd'hui, 10:30</span>
+                        </div>
+                        <div class="message-preview-subject">Question sur le dernier contrôle</div>
+                        <div class="message-preview-excerpt">Bonjour Monsieur, je voulais vous poser une question concernant...</div>
+                    </div>
+                    <div class="message-preview unread">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">Administration</span>
+                            <span class="message-preview-time">Hier, 15:45</span>
+                        </div>
+                        <div class="message-preview-subject">Réunion du personnel</div>
+                        <div class="message-preview-excerpt">Nous vous rappelons la réunion du personnel prévue...</div>
+                    </div>
+                    <div class="message-preview">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">M. Le Directeur</span>
+                            <span class="message-preview-time">Lundi, 09:20</span>
+                        </div>
+                        <div class="message-preview-subject">Projet pédagogique</div>
+                        <div class="message-preview-excerpt">Veuillez trouver ci-joint le nouveau projet pédagogique...</div>
+                    </div>
+                    <div class="message-preview">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">Système</span>
+                            <span class="message-preview-time">Vendredi, 16:10</span>
+                        </div>
+                        <div class="message-preview-subject">Mise à jour disponible</div>
+                        <div class="message-preview-excerpt">Une nouvelle version de l'application est disponible...</div>
+                    </div>
+                </div>
+
+                <!-- Détail du message -->
+                <div class="message-detail">
+                    <div class="message-header">
+                        <h2 class="message-subject">Question sur le dernier contrôle</h2>
+                        <div class="message-meta">
+                            <span class="message-sender">Parents de Jean Dupont</span>
+                            <span class="message-time">Aujourd'hui, 10:30</span>
+                        </div>
+                    </div>
+                    
+                    <div class="message-content">
+                        <p>Bonjour Monsieur Dupont,</p>
+                        <p>Je me permets de vous écrire concernant le dernier contrôle de mathématiques que Jean a passé la semaine dernière. Il a obtenu 12/20 mais nous avons remarqué qu'il a eu des difficultés avec les exercices de géométrie.</p>
+                        <p>Serait-il possible de nous indiquer quelles sont les notions qu'il devrait particulièrement revoir ? Nous aimerions l'aider à progresser dans ce domaine.</p>
+                        <p>Je vous remercie par avance pour votre retour.</p>
+                        <p>Cordialement,</p>
+                        <p>Sophie Dupont</p>
+                    </div>
+                    
+                    <div class="message-actions">
+                        <button id="reply-btn" class="btn btn-primary">
+                            <i class="fas fa-reply"></i> Répondre
+                        </button>
+                        <button id="delete-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                    
+                    <!-- Formulaire de réponse (caché par défaut) -->
+                    <div id="reply-form" class="reply-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="reply-message">Votre réponse</label>
+                            <textarea id="reply-message" class="form-control" placeholder="Écrivez votre réponse ici..."></textarea>
+                        </div>
+                        <button id="send-reply-btn" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Envoyer
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <script src="{{url_for('static',filename='js/parent/script.js')}}"></script>
+        </div>
+    </div>
+
+   </body>
+</html>

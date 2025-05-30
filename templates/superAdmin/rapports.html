@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapports - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/style.css')}}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .recent-reports {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-list {
+            margin-top: 1rem;
+        }
+
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .report-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .report-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .icon-users {
+            background: linear-gradient(45deg, #4a90e2, #357abd);
+        }
+
+        .icon-schools {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+        }
+
+        .icon-performance {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .icon-activity {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+        }
+
+        .report-details h4 {
+            margin: 0;
+            color: var(--secondary-color);
+        }
+
+        .report-details p {
+            margin: 0.3rem 0 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .report-actions .btn {
+            padding: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-item {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .report-info {
+                flex-direction: column;
+            }
+
+            .report-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('superadmin_index')}}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('ecolesSuperAd')}}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{url_for('usersSuperAd')}}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{url_for('supportSuperAd')}}"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{url_for('rapportsSuperAd')}}" class="active"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{url_for('messagerieSuperAd')}}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('parametresSuperAd')}}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Rapports</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <div class="reports-grid">
+                <!-- Activité des utilisateurs -->
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3 class="report-title">Activité des utilisateurs</h3>
+                        <div class="report-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="userActivityChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">1,234</div>
+                            <div class="stat-label">Utilisateurs actifs</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">89%</div>
+                            <div class="stat-label">Taux d'engagement</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">45min</div>
+                            <div class="stat-label">Temps moyen</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance des écoles -->
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3 class="report-title">Performance des écoles</h3>
+                        <div class="report-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="schoolPerformanceChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">92%</div>
+                            <div class="stat-label">Taux de réussite</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">85%</div>
+                            <div class="stat-label">Satisfaction</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">78%</div>
+                            <div class="stat-label">Assiduité</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-reports">
+                <div class="report-header">
+                    <h3 class="report-title">Rapports récents</h3>
+                    <a href="{{url_for('genererRapportSuperAd')}}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nouveau rapport
+                    </a>
+                </div>
+                <div class="report-list">
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div class="report-icon icon-users">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="report-details">
+                                <h4>Rapport d'activité des utilisateurs</h4>
+                                <p>Généré le 15/03/2024 à 14:30</p>
+                            </div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-share"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div class="report-icon icon-schools">
+                                <i class="fas fa-school"></i>
+                            </div>
+                            <div class="report-details">
+                                <h4>Performance des écoles - Q1 2024</h4>
+                                <p>Généré le 14/03/2024 à 10:15</p>
+                            </div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-share"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div class="report-icon icon-performance">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="report-details">
+                                <h4>Analyse des résultats académiques</h4>
+                                <p>Généré le 13/03/2024 à 16:45</p>
+                            </div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-share"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+    <script>
+        // Graphique d'activité des utilisateurs
+        const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+        new Chart(userActivityCtx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                datasets: [{
+                    label: 'Utilisateurs actifs',
+                    data: [650, 590, 800, 810, 560, 550, 400],
+                    borderColor: '#4a90e2',
+                    backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Graphique de performance des écoles
+        const schoolPerformanceCtx = document.getElementById('schoolPerformanceChart').getContext('2d');
+        new Chart(schoolPerformanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['École A', 'École B', 'École C', 'École D', 'École E'],
+                datasets: [{
+                    label: 'Taux de réussite',
+                    data: [85, 92, 78, 88, 95],
+                    backgroundColor: '#2ecc71'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

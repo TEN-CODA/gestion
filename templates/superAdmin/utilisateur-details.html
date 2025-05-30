@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de l'utilisateur - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/superAdmin/style.css') }}">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-superadmin {
+            background: rgba(74, 144, 226, 0.1);
+            color: #4a90e2;
+        }
+
+        .role-admin {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .role-professeur {
+            background: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+
+        .role-eleve {
+            background: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+
+        .role-parent {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .user-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .user-meta span {
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{ url_for('superadmin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{ url_for('superadmin_ecoles') }}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{ url_for('superadmin_utilisateurs') }}" class="active"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{ url_for('superadmin_support') }}"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{ url_for('superadmin_rapports') }}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{ url_for('superadmin_messagerie') }}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{ url_for('superadmin_parametres') }}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Détails de l'utilisateur</h1>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/80" alt="User" class="user-avatar">
+                    <div class="user-details">
+                        <div class="user-name">{{ user.username }}</div>
+                        <span class="user-role role-{{ user.role }}">{{ user.role }}</span>
+                        <div class="user-meta">
+                            <span><i class="fas fa-envelope"></i> {{ user.email }}</span>
+                            <span><i class="fas fa-clock"></i> Dernière connexion : {{ user.last_login.strftime('%d/%m/%Y %H:%M') if user.last_login else 'Jamais' }}</span>
+                            <span><i class="fas fa-calendar"></i> Créé le : {{ user.created_at.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="username">Nom d'utilisateur</label>
+                            <input type="text" id="username" name="username" value="{{ user.username }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role">Rôle</label>
+                            <select id="role" name="role" required>
+                                <option value="superadmin" {% if user.role == 'superadmin' %}selected{% endif %}>Super Admin</option>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin École</option>
+                                <option value="professeur" {% if user.role == 'professeur' %}selected{% endif %}>Professeur</option>
+                                <option value="eleve" {% if user.role == 'eleve' %}selected{% endif %}>Élève</option>
+                                <option value="parent" {% if user.role == 'parent' %}selected{% endif %}>Parent</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ecole">École</label>
+                            <select id="ecole" name="ecole_id" {% if user.role == 'superadmin' %}disabled{% endif %}>
+                                <option value="">Sélectionnez une école</option>
+                                {% for ecole in ecoles %}
+                                <option value="{{ ecole.id }}" {% if user.ecole_id == ecole.id %}selected{% endif %}>{{ ecole.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Statut</label>
+                            <select id="status" name="status" required>
+                                <option value="active" {% if user.is_active %}selected{% endif %}>Actif</option>
+                                <option value="inactive" {% if not user.is_active %}selected{% endif %}>Inactif</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+                            <input type="password" id="password" name="password">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ url_for('superadmin_utilisateurs') }}" class="btn btn-secondary">Retour</a>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Afficher/masquer le champ école selon le rôle
+        document.getElementById('role').addEventListener('change', function() {
+            const ecoleField = document.getElementById('ecole');
+            if (this.value === 'superadmin') {
+                ecoleField.disabled = true;
+                ecoleField.value = '';
+            } else {
+                ecoleField.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 

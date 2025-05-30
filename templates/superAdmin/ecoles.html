@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Écoles - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/modals.css')}}">
+    <style>
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .school-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .school-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .school-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .school-content {
+            padding: 1.5rem;
+        }
+
+        .school-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .school-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin: 0;
+        }
+
+        .school-type {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(74, 144, 226, 0.1);
+            color: var(--primary-color);
+        }
+
+        .school-info {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .info-item i {
+            color: var(--primary-color);
+            width: 20px;
+        }
+
+        .school-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .school-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .school-actions .btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-group,
+            .search-box {
+                width: 100%;
+            }
+
+            .school-stats {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .school-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('superadmin_index')}}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('ecolesSuperAd')}}" class="active"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{url_for('usersSuperAd')}}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{url_for('supportSuperAd')}}"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{url_for('rapportsSuperAd')}}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{url_for('messagerieSuperAd')}}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('parametresSuperAd')}}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Écoles</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Liste des Écoles</h2>
+                <a href="{{ url_for('superadmin_ajouter_ecole') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Ajouter une école
+                </a>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Adresse</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Date de création</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ecole in ecoles %}
+                        <tr>
+                            <td>{{ ecole.id }}</td>
+                            <td>{{ ecole.nom }}</td>
+                            <td>{{ ecole.adresse }}</td>
+                            <td>{{ ecole.telephone }}</td>
+                            <td>{{ ecole.email }}</td>
+                            <td>{{ ecole.date_creation.strftime('%d/%m/%Y') if ecole.date_creation else 'N/A' }}</td>
+                            <td class="actions">
+                                <a href="{{ url_for('superadmin_ecole_details', ecole_id=ecole.id) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ url_for('superadmin_supprimer_ecole', ecole_id=ecole.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette école ?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+    <script src="{{url_for('static',filename='js/superAdmin/modals.js')}}"></script>
+    
+    <script>
+        // Fonction pour afficher les détails d'une école
+        function showSchoolDetails(school) {
+            ModalManager.details({
+                title: school.name,
+                details: `
+                    <div class="school-details-grid">
+                        <div class="detail-item">
+                            <label>Type d'établissement</label>
+                            <p>${school.type}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Adresse</label>
+                            <p>${school.address}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Téléphone</label>
+                            <p>${school.phone}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email</label>
+                            <p>${school.email}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Site web</label>
+                            <p><a href="${school.website}" target="_blank">${school.website}</a></p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Description</label>
+                            <p>${school.description}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Statistiques</label>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value">${school.stats.students}</div>
+                                    <div class="stat-label">Élèves</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${school.stats.teachers}</div>
+                                    <div class="stat-label">Professeurs</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${school.stats.success}%</div>
+                                    <div class="stat-label">Réussite</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            });
+        }
+
+        // Fonction pour modifier une école
+        function editSchool(school) {
+            ModalManager.form({
+                title: 'Modifier l\'école',
+                formContent: `
+                    <form id="editSchoolForm">
+                        <div class="form-group">
+                            <label for="schoolName">Nom de l'école</label>
+                            <input type="text" id="schoolName" value="${school.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolType">Type d'établissement</label>
+                            <select id="schoolType" required>
+                                <option value="lycee" ${school.type === 'Lycée' ? 'selected' : ''}>Lycée</option>
+                                <option value="college" ${school.type === 'Collège' ? 'selected' : ''}>Collège</option>
+                                <option value="primaire" ${school.type === 'Primaire' ? 'selected' : ''}>École primaire</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolAddress">Adresse</label>
+                            <input type="text" id="schoolAddress" value="${school.address}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolPhone">Téléphone</label>
+                            <input type="tel" id="schoolPhone" value="${school.phone}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolEmail">Email</label>
+                            <input type="email" id="schoolEmail" value="${school.email}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolWebsite">Site web</label>
+                            <input type="url" id="schoolWebsite" value="${school.website}">
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolDescription">Description</label>
+                            <textarea id="schoolDescription" rows="4">${school.description}</textarea>
+                        </div>
+                    </form>
+                `,
+                onSubmit: () => {
+                    // Logique de sauvegarde
+                    ModalManager.notify('École modifiée avec succès', 'success');
+                }
+            });
+        }
+
+        // Fonction pour supprimer une école
+        function deleteSchool(school) {
+            ModalManager.confirm({
+                title: 'Supprimer l\'école',
+                message: `Êtes-vous sûr de vouloir supprimer l'école "${school.name}" ? Cette action est irréversible.`,
+                confirmText: 'Supprimer',
+                onConfirm: () => {
+                    // Logique de suppression
+                    ModalManager.notify('École supprimée avec succès', 'success');
+                }
+            });
+        }
+
+        // Ajouter les événements aux boutons
+        document.querySelectorAll('.school-actions .btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = btn.querySelector('i').className;
+                const schoolCard = btn.closest('.school-card');
+                const school = {
+                    name: schoolCard.querySelector('.school-title').textContent,
+                    type: schoolCard.querySelector('.school-type').textContent,
+                    address: schoolCard.querySelector('.info-item:nth-child(1) span').textContent,
+                    phone: schoolCard.querySelector('.info-item:nth-child(2) span').textContent,
+                    email: schoolCard.querySelector('.info-item:nth-child(3) span').textContent,
+                    stats: {
+                        students: schoolCard.querySelector('.stat-item:nth-child(1) .stat-value').textContent,
+                        teachers: schoolCard.querySelector('.stat-item:nth-child(2) .stat-value').textContent,
+                        success: schoolCard.querySelector('.stat-item:nth-child(3) .stat-value').textContent
+                    }
+                };
+
+                if (action.includes('eye')) {
+                    showSchoolDetails(school);
+                } else if (action.includes('edit')) {
+                    editSchool(school);
+                } else if (action.includes('trash')) {
+                    deleteSchool(school);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

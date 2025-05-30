@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Élèves - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/prof/style.css')}}">
+    <style>
+        
+        
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .class-selector select {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 150px;
+        }
+        
+        /* Table Container */
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Form Controls */
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: black;
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 8px;
+            width: 50%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{{ url_for('professeurs_index') }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="{{ url_for('eleves') }}" class="active"><i class="fas fa-user-graduate"></i> Élèves</a></li>
+                <li><a href="{{ url_for('cours') }}"><i class="fas fa-book"></i> Cours</a></li>
+                <li><a href="{{ url_for('controls') }}"><i class="fas fa-tasks"></i> Contrôles</a></li>
+                <li><a href="{{ url_for('professeur_emploi_du_temps') }}"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                <li><a href="{{ url_for('messagerie') }}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                <li>
+                    <a href="parametres.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Gestion des Élèves</h1>
+                    <div class="class-selector">
+                        <select id="class-select">
+                            <option value="all">Toutes les classes</option>
+                            <option value="5A">5ème A</option>
+                            <option value="5B">5ème B</option>
+                            <option value="4A">4ème A</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Prof. Dupont</span>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <input type="text" id="studentSearch" class="form-control" placeholder="Rechercher un élève..." style="width: 300px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des élèves -->
+            <div class="table-container">
+                <table id="students-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Postnom</th>
+                            <th>Prénom</th>
+                            <th>Conduite</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-list">
+                        <!-- Rempli dynamiquement par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal de notification -->
+            <div id="notificationModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Envoyer une notification aux parents</h2>
+                    <form id="notificationForm">
+                        <input type="hidden" id="notifyStudentId">
+                        <div class="form-group">
+                            <label for="studentNameDisplay">Élève</label>
+                            <input type="text" id="studentNameDisplay" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationType">Type de notification</label>
+                            <select id="notificationType" class="form-control" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="performance">Problème de performance</option>
+                                <option value="behavior">Problème de comportement</option>
+                                <option value="absence">Absence non justifiée</option>
+                                <option value="positive">Félicitations</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationMessage">Message</label>
+                            <textarea id="notificationMessage" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane"></i> Envoyer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des élèves avec nom, postnom et prénom séparés
+        const students = [
+            { id: 1, lastName: "Dupont", middleName: "Jean", firstName: "Pierre", class: "5A", behavior: "Exemplaire" },
+            { id: 2, lastName: "Martin", middleName: "Marie", firstName: "Sophie", class: "5A", behavior: "Moyenne" },
+            { id: 3, lastName: "Durand", middleName: "Pierre", firstName: "Louis", class: "5B", behavior: "Problématique" },
+            { id: 4, lastName: "Lambert", middleName: "Sophie", firstName: "Anne", class: "5B", behavior: "Exemplaire" },
+            { id: 5, lastName: "Moreau", middleName: "Thomas", firstName: "Jacques", class: "4A", behavior: "Moyenne" },
+            { id: 6, lastName: "Petit", middleName: "Laura", firstName: "Julie", class: "4A", behavior: "Exemplaire" },
+            { id: 7, lastName: "Bernard", middleName: "Luc", firstName: "Paul", class: "5A", behavior: "Moyenne" },
+            { id: 8, lastName: "Girard", middleName: "Émilie", firstName: "Claire", class: "5B", behavior: "Exemplaire" }
+        ];
+
+        // Éléments DOM
+        const classSelect = document.getElementById('class-select');
+        const studentSearch = document.getElementById('studentSearch');
+        const studentsList = document.getElementById('students-list');
+        const modal = document.getElementById('notificationModal');
+        const closeModal = document.querySelector('.close-modal');
+
+        // Afficher les élèves
+        function displayStudents(filterClass = 'all', searchTerm = '') {
+            studentsList.innerHTML = '';
+            
+            const filteredStudents = students.filter(student => {
+                const classMatch = filterClass === 'all' || student.class === filterClass;
+                const nameMatch = 
+                    student.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    student.middleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    student.firstName.toLowerCase().includes(searchTerm.toLowerCase());
+                return classMatch && nameMatch;
+            });
+
+            if (filteredStudents.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" style="text-align: center;">Aucun élève trouvé</td>`;
+                studentsList.appendChild(row);
+                return;
+            }
+
+            filteredStudents.forEach(student => {
+                const behaviorClass = getBehaviorClass(student.behavior);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.lastName}</td>
+                    <td>${student.middleName}</td>
+                    <td>${student.firstName}</td>
+                    <td><span class="badge ${behaviorClass}">${student.behavior}</span></td>
+                    <td>
+                        <a href="{{url_for('infosEleve')}}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
+                        <button class="btn btn-info btn-sm notify-btn" 
+                                data-student-id="${student.id}" 
+                                data-student-name="${student.lastName} ${student.middleName} ${student.firstName}">
+                            <i class="fas fa-bell"></i> Notifier
+                        </button>
+                    </td>
+                `;
+                studentsList.appendChild(row);
+            });
+
+            // Réattacher les événements aux boutons de notification
+            document.querySelectorAll('.notify-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    const studentName = this.getAttribute('data-student-name');
+                    
+                    document.getElementById('notifyStudentId').value = studentId;
+                    document.getElementById('studentNameDisplay').value = studentName;
+                    modal.style.display = 'block';
+                });
+            });
+        }
+
+        // Obtenir la classe CSS pour le comportement
+        function getBehaviorClass(behavior) {
+            switch(behavior) {
+                case 'Exemplaire': return 'badge-success';
+                case 'Moyenne': return 'badge-warning';
+                case 'Problématique': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // Événements
+        classSelect.addEventListener('change', function() {
+            displayStudents(this.value, studentSearch.value);
+        });
+
+        studentSearch.addEventListener('input', function() {
+            displayStudents(classSelect.value, this.value);
+        });
+
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        document.getElementById('notificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('notifyStudentId').value;
+            const notificationType = document.getElementById('notificationType').value;
+            const message = document.getElementById('notificationMessage').value;
+            
+            console.log('Notification envoyée pour l\'élève ID:', studentId);
+            console.log('Type:', notificationType);
+            console.log('Message:', message);
+            
+            alert('Notification envoyée avec succès aux parents !');
+            modal.style.display = 'none';
+            this.reset();
+        });
+
+        // Initialisation
+        displayStudents();
+    </script>
+</body>
+</html>

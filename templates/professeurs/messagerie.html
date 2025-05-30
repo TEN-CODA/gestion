@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/prof/style.css')}}">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --sidebar-width: 250px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            width: calc(100% - var(--sidebar-width));
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* Messagerie */
+        .messaging-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .messages-list {
+            width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .message-preview {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .message-preview:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .message-preview.active {
+            background-color: #e3f2fd;
+        }
+        
+        .message-preview.unread {
+            font-weight: bold;
+        }
+        
+        .message-preview-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .message-preview-sender {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .message-preview-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .message-preview-subject {
+            font-size: 14px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-preview-excerpt {
+            font-size: 13px;
+            color: #7f8c8d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-detail {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .message-subject {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .message-sender {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .message-content {
+            flex: 1;
+            padding: 15px 0;
+            line-height: 1.7;
+        }
+        
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .reply-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .no-message-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #7f8c8d;
+            text-align: center;
+        }
+        
+        .no-message-selected i {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .messaging-container {
+                flex-direction: column;
+            }
+            
+            .messages-list {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{{ url_for('professeurs_index') }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="{{ url_for('eleves') }}"><i class="fas fa-user-graduate"></i> Élèves</a></li>
+                <li><a href="{{ url_for('cours') }}"><i class="fas fa-book"></i> Cours</a></li>
+                <li><a href="{{ url_for('controls') }}"><i class="fas fa-tasks"></i> Contrôles</a></li>
+                <li><a href="{{ url_for('professeur_emploi_du_temps') }}"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                <li><a href="{{ url_for('messagerie') }}" class="active"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                <li>
+                    <a href="parametres.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Messagerie</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Prof. Dupont</span>
+                </div>
+            </div>
+
+            <div class="messaging-container">
+                <!-- Liste des messages -->
+                <div class="messages-list">
+                    <div class="message-preview unread active">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">Parents de Jean Dupont</span>
+                            <span class="message-preview-time">Aujourd'hui, 10:30</span>
+                        </div>
+                        <div class="message-preview-subject">Question sur le dernier contrôle</div>
+                        <div class="message-preview-excerpt">Bonjour Monsieur, je voulais vous poser une question concernant...</div>
+                    </div>
+                    <div class="message-preview unread">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">Administration</span>
+                            <span class="message-preview-time">Hier, 15:45</span>
+                        </div>
+                        <div class="message-preview-subject">Réunion du personnel</div>
+                        <div class="message-preview-excerpt">Nous vous rappelons la réunion du personnel prévue...</div>
+                    </div>
+                    <div class="message-preview">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">M. Le Directeur</span>
+                            <span class="message-preview-time">Lundi, 09:20</span>
+                        </div>
+                        <div class="message-preview-subject">Projet pédagogique</div>
+                        <div class="message-preview-excerpt">Veuillez trouver ci-joint le nouveau projet pédagogique...</div>
+                    </div>
+                    <div class="message-preview">
+                        <div class="message-preview-header">
+                            <span class="message-preview-sender">Système</span>
+                            <span class="message-preview-time">Vendredi, 16:10</span>
+                        </div>
+                        <div class="message-preview-subject">Mise à jour disponible</div>
+                        <div class="message-preview-excerpt">Une nouvelle version de l'application est disponible...</div>
+                    </div>
+                </div>
+
+                <!-- Détail du message -->
+                <div class="message-detail">
+                    <div class="message-header">
+                        <h2 class="message-subject">Question sur le dernier contrôle</h2>
+                        <div class="message-meta">
+                            <span class="message-sender">Parents de Jean Dupont</span>
+                            <span class="message-time">Aujourd'hui, 10:30</span>
+                        </div>
+                    </div>
+                    
+                    <div class="message-content">
+                        <p>Bonjour Monsieur Dupont,</p>
+                        <p>Je me permets de vous écrire concernant le dernier contrôle de mathématiques que Jean a passé la semaine dernière. Il a obtenu 12/20 mais nous avons remarqué qu'il a eu des difficultés avec les exercices de géométrie.</p>
+                        <p>Serait-il possible de nous indiquer quelles sont les notions qu'il devrait particulièrement revoir ? Nous aimerions l'aider à progresser dans ce domaine.</p>
+                        <p>Je vous remercie par avance pour votre retour.</p>
+                        <p>Cordialement,</p>
+                        <p>Sophie Dupont</p>
+                    </div>
+                    
+                    <div class="message-actions">
+                        <button id="reply-btn" class="btn btn-primary">
+                            <i class="fas fa-reply"></i> Répondre
+                        </button>
+                        <button id="delete-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                    
+                    <!-- Formulaire de réponse (caché par défaut) -->
+                    <div id="reply-form" class="reply-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="reply-message">Votre réponse</label>
+                            <textarea id="reply-message" class="form-control" placeholder="Écrivez votre réponse ici..."></textarea>
+                        </div>
+                        <button id="send-reply-btn" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Envoyer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des messages
+        const messages = [
+            {
+                id: 1,
+                sender: "Parents de Jean Dupont",
+                subject: "Question sur le dernier contrôle",
+                time: "Aujourd'hui, 10:30",
+                content: `
+                    <p>Bonjour Monsieur Dupont,</p>
+                    <p>Je me permets de vous écrire concernant le dernier contrôle de mathématiques que Jean a passé la semaine dernière. Il a obtenu 12/20 mais nous avons remarqué qu'il a eu des difficultés avec les exercices de géométrie.</p>
+                    <p>Serait-il possible de nous indiquer quelles sont les notions qu'il devrait particulièrement revoir ? Nous aimerions l'aider à progresser dans ce domaine.</p>
+                    <p>Je vous remercie par avance pour votre retour.</p>
+                    <p>Cordialement,</p>
+                    <p>Sophie Dupont</p>
+                `,
+                unread: true,
+                canReply: true
+            },
+            {
+                id: 2,
+                sender: "Administration",
+                subject: "Réunion du personnel",
+                time: "Hier, 15:45",
+                content: `
+                    <p>Bonjour à tous,</p>
+                    <p>Nous vous rappelons la réunion du personnel prévue demain à 14h en salle des professeurs.</p>
+                    <p>Ordre du jour :</p>
+                    <ul>
+                        <li>Bilan du trimestre</li>
+                        <li>Préparation des conseils de classe</li>
+                        <li>Divers</li>
+                    </ul>
+                    <p>Votre présence est obligatoire.</p>
+                    <p>Cordialement,</p>
+                    <p>La direction</p>
+                `,
+                unread: true,
+                canReply: false
+            },
+            {
+                id: 3,
+                sender: "M. Le Directeur",
+                subject: "Projet pédagogique",
+                time: "Lundi, 09:20",
+                content: `
+                    <p>Cher collègue,</p>
+                    <p>Veuillez trouver ci-joint le nouveau projet pédagogique de l'établissement pour l'année scolaire 2023-2024.</p>
+                    <p>Nous vous serions reconnaissants de bien vouloir en prendre connaissance avant la réunion de rentrée.</p>
+                    <p>Bien cordialement,</p>
+                    <p>Le directeur</p>
+                `,
+                unread: false,
+                canReply: false
+            },
+            {
+                id: 4,
+                sender: "Système",
+                subject: "Mise à jour disponible",
+                time: "Vendredi, 16:10",
+                content: `
+                    <p>Notification système :</p>
+                    <p>Une nouvelle version de l'application de gestion de classe est disponible (v2.3.1).</p>
+                    <p>Nouvelles fonctionnalités :</p>
+                    <ul>
+                        <li>Export des notes au format Excel</li>
+                        <li>Amélioration de l'interface de saisie</li>
+                        <li>Correction de bugs mineurs</li>
+                    </ul>
+                    <p>La mise à jour sera appliquée automatiquement lors de votre prochaine connexion.</p>
+                `,
+                unread: false,
+                canReply: false
+            }
+        ];
+
+        // Éléments DOM
+        const messagesList = document.querySelector('.messages-list');
+        const messageDetail = document.querySelector('.message-detail');
+        const replyBtn = document.getElementById('reply-btn');
+        const replyForm = document.getElementById('reply-form');
+        const sendReplyBtn = document.getElementById('send-reply-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+
+        // Afficher la liste des messages
+        function displayMessages() {
+            messagesList.innerHTML = '';
+            
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message-preview ${message.unread ? 'unread' : ''}`;
+                messageElement.dataset.id = message.id;
+                
+                messageElement.innerHTML = `
+                    <div class="message-preview-header">
+                        <span class="message-preview-sender">${message.sender}</span>
+                        <span class="message-preview-time">${message.time}</span>
+                    </div>
+                    <div class="message-preview-subject">${message.subject}</div>
+                    <div class="message-preview-excerpt">${message.content.substring(0, 60)}...</div>
+                `;
+                
+                messageElement.addEventListener('click', () => {
+                    // Marquer comme lu
+                    message.unread = false;
+                    messageElement.classList.remove('unread');
+                    
+                    // Afficher le message sélectionné
+                    displayMessage(message.id);
+                    
+                    // Mettre en surbrillance le message sélectionné
+                    document.querySelectorAll('.message-preview').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    messageElement.classList.add('active');
+                });
+                
+                messagesList.appendChild(messageElement);
+            });
+            
+            // Afficher le premier message par défaut
+            if (messages.length > 0) {
+                displayMessage(messages[0].id);
+                messagesList.firstChild.classList.add('active');
+            }
+        }
+        
+        // Afficher un message spécifique
+        function displayMessage(messageId) {
+            const message = messages.find(m => m.id == messageId);
+            
+            if (message) {
+                document.querySelector('.message-subject').textContent = message.subject;
+                document.querySelector('.message-sender').textContent = message.sender;
+                document.querySelector('.message-time').textContent = message.time;
+                document.querySelector('.message-content').innerHTML = message.content;
+                
+                // Afficher/masquer le bouton de réponse
+                replyBtn.style.display = message.canReply ? 'flex' : 'none';
+            }
+        }
+        
+        // Gestion des événements
+        replyBtn.addEventListener('click', () => {
+            replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        sendReplyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const replyContent = document.getElementById('reply-message').value;
+            
+            if (replyContent.trim() === '') {
+                alert('Veuillez écrire un message avant d\'envoyer');
+                return;
+            }
+            
+            // Ici, vous enverriez normalement la réponse au serveur
+            console.log('Réponse envoyée:', replyContent);
+            
+            alert('Votre réponse a bien été envoyée !');
+            replyForm.style.display = 'none';
+            document.getElementById('reply-message').value = '';
+        });
+        
+        deleteBtn.addEventListener('click', () => {
+            if (confirm('Voulez-vous vraiment supprimer ce message ?')) {
+                // Ici, vous enverriez normalement la demande de suppression au serveur
+                const activeMessage = document.querySelector('.message-preview.active');
+                if (activeMessage) {
+                    const messageId = activeMessage.dataset.id;
+                    console.log('Message supprimé:', messageId);
+                    activeMessage.remove();
+                    
+                    // Afficher un message vide
+                    document.querySelector('.message-subject').textContent = '';
+                    document.querySelector('.message-sender').textContent = '';
+                    document.querySelector('.message-time').textContent = '';
+                    document.querySelector('.message-content').innerHTML = `
+                        <div class="no-message-selected">
+                            <i class="fas fa-envelope-open"></i>
+                            <p>Aucun message sélectionné</p>
+                        </div>
+                    `;
+                    replyBtn.style.display = 'none';
+                }
+            }
+        });
+
+        // Initialisation
+        displayMessages();
+    </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Gestion de Classe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/prof/style.css')}}">
+    <style>
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info img {
+            border-radius: 50%;
+        }
+        
+        .class-selector select {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .card-header i {
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+        
+        .card-body {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .card-body h2 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+        
+        .card-body p {
+            margin: 5px 0 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        /* Table */
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .table-container h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>École Primaire</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active">
+                    <a href="{{url_for('professeurs_index')}}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{url_for('eleves')}}">
+                        <i class="fas fa-users"></i>
+                        <span>Élèves</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{url_for('cours')}}">
+                        <i class="fas fa-book"></i>
+                        <span>Cours</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{url_for('controls')}}">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Contrôles</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('professeur_emploi_du_temps') }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Emploi du temps</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{url_for('messagerie')}}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messagerie</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="parametres.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Tableau de Bord</h1>
+                    <div class="class-selector">
+                        <select id="class-select">
+                            <option value="CM1A">CM1 - Classe A</option>
+                            <option value="CM2B">CM2 - Classe B</option>
+                            <option value="CE2C">CE2 - Classe C</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Prof. Dupont</span>
+                </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="cards" id="dashboard-cards">
+                <!-- Rempli dynamiquement par JavaScript -->
+            </div>
+
+            <!-- Dernières activités -->
+            <div class="table-container">
+                <h2>Dernières activités</h2>
+                <table id="activities-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Événement</th>
+                            <th>Matière</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rempli dynamiquement par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données par classe
+        const classData = {
+            'CM1A': {
+                students: 24,
+                subjects: 5,
+                tests: 3,
+                average: 14.5,
+                activities: [
+                    { date: '10/05/2023', event: 'Contrôle de Mathématiques', subject: 'Maths', status: 'Corrigé', statusClass: 'success' },
+                    { date: '12/05/2023', event: 'Devoir à rendre', subject: 'Français', status: 'En attente', statusClass: 'warning' },
+                    { date: '15/05/2023', event: 'Réunion parents-profs', subject: '-', status: 'Planifié', statusClass: 'primary' }
+                ]
+            },
+            'CM2B': {
+                students: 28,
+                subjects: 6,
+                tests: 2,
+                average: 13.2,
+                activities: [
+                    { date: '11/05/2023', event: 'Sortie pédagogique', subject: 'Sciences', status: 'Confirmé', statusClass: 'success' },
+                    { date: '13/05/2023', event: 'Contrôle d\'Histoire', subject: 'Histoire', status: 'À corriger', statusClass: 'warning' },
+                    { date: '16/05/2023', event: 'Projet de groupe', subject: 'Arts', status: 'En cours', statusClass: 'primary' }
+                ]
+            },
+            'CE2C': {
+                students: 22,
+                subjects: 4,
+                tests: 1,
+                average: 15.0,
+                activities: [
+                    { date: '09/05/2023', event: 'Évaluation de lecture', subject: 'Français', status: 'Corrigé', statusClass: 'success' },
+                    { date: '14/05/2023', event: 'Atelier calcul mental', subject: 'Maths', status: 'Terminé', statusClass: 'success' },
+                    { date: '17/05/2023', event: 'Contrôle de vocabulaire', subject: 'Français', status: 'À venir', statusClass: 'primary' }
+                ]
+            }
+        };
+
+        // Éléments DOM
+        const classSelect = document.getElementById('class-select');
+        const dashboardCards = document.getElementById('dashboard-cards');
+        const activitiesTable = document.querySelector('#activities-table tbody');
+
+        // Afficher les données du tableau de bord
+        function displayDashboardData(classId) {
+            const data = classData[classId];
+            
+            // Mettre à jour les cartes
+            dashboardCards.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Élèves</h3>
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-body">
+                        <h2>${data.students}</h2>
+                        <p>Dans votre classe</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Cours</h3>
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="card-body">
+                        <h2>${data.subjects}</h2>
+                        <p>Matières enseignées</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Contrôles</h3>
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="card-body">
+                        <h2>${data.tests}</h2>
+                        <p>Programmés cette semaine</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Moyenne</h3>
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="card-body">
+                        <h2>${data.average}</h2>
+                        <p>Moyenne de la classe</p>
+                    </div>
+                </div>
+            `;
+            
+            // Mettre à jour le tableau des activités
+            activitiesTable.innerHTML = '';
+            data.activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.date}</td>
+                    <td>${activity.event}</td>
+                    <td>${activity.subject}</td>
+                    <td><span class="badge badge-${activity.statusClass}">${activity.status}</span></td>
+                `;
+                activitiesTable.appendChild(row);
+            });
+        }
+
+        // Gestion du changement de classe
+        classSelect.addEventListener('change', function() {
+            displayDashboardData(this.value);
+        });
+
+        // Initialisation
+        displayDashboardData(classSelect.value);
+    </script>
+</body>
+</html>

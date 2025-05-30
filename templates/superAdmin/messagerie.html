@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/modals.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/notifications.css')}}">
+    <style>
+        .messaging-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 180px);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .conversations-list {
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        .conversation-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .conversation-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .conversation-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .conversation-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .conversation-title i {
+            color: var(--primary-color);
+        }
+
+        .conversation-time {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .conversation-preview {
+            font-size: 0.9rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-item.active .conversation-time,
+        .conversation-item.active .conversation-preview {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .messages-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .messages-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background-color: #f8f9fa;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .message-input {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .message-input textarea {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: none;
+            height: 60px;
+        }
+
+        .message-input button {
+            align-self: flex-end;
+        }
+
+        .new-message-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .new-message-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .messaging-container {
+                grid-template-columns: 1fr;
+            }
+
+            .conversations-list {
+                display: none;
+            }
+
+            .conversations-list.active {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1000;
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('superadmin_index')}}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('ecolesSuperAd')}}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{url_for('usersSuperAd')}}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{url_for('supportSuperAd')}}"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{url_for('rapportsSuperAd')}}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{url_for('messagerieSuperAd')}}" class="active"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('parametresSuperAd')}}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Messagerie</h1>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <div class="messaging-container">
+                <div class="conversations-list">
+                    <div class="conversation-item active">
+                        <div class="conversation-header">
+                            <div class="conversation-title">
+                                <i class="fas fa-school"></i>
+                                Lycée Descartes
+                            </div>
+                            <div class="conversation-time">10:30</div>
+                        </div>
+                        <div class="conversation-preview">Bonjour, nous avons besoin d'informations supplémentaires...</div>
+                    </div>
+                    <div class="conversation-item">
+                        <div class="conversation-header">
+                            <div class="conversation-title">
+                                <i class="fas fa-school"></i>
+                                Collège Victor Hugo
+                            </div>
+                            <div class="conversation-time">Hier</div>
+                        </div>
+                        <div class="conversation-preview">Merci pour votre réponse rapide...</div>
+                    </div>
+                    <div class="conversation-item">
+                        <div class="conversation-header">
+                            <div class="conversation-title">
+                                <i class="fas fa-school"></i>
+                                École Marie Curie
+                            </div>
+                            <div class="conversation-time">23/03</div>
+                        </div>
+                        <div class="conversation-preview">Nous confirmons la réception des documents...</div>
+                    </div>
+                </div>
+
+                <div class="messages-container">
+                    <div class="messages-header">
+                        <div class="conversation-title">
+                            <i class="fas fa-school"></i>
+                            Lycée Descartes
+                        </div>
+                        <div class="conversation-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="messages-list">
+                        <div class="message received">
+                            <div class="message-content">
+                                Bonjour, nous avons besoin d'informations supplémentaires concernant les inscriptions pour l'année prochaine.
+                            </div>
+                            <div class="message-time">10:30</div>
+                        </div>
+                        <div class="message sent">
+                            <div class="message-content">
+                                Bonjour, je peux vous aider avec ça. Quelles informations spécifiques vous manquent ?
+                            </div>
+                            <div class="message-time">10:32</div>
+                        </div>
+                        <div class="message received">
+                            <div class="message-content">
+                                Nous aurions besoin des statistiques d'inscription des 3 dernières années et des projections pour l'année prochaine.
+                            </div>
+                            <div class="message-time">10:33</div>
+                        </div>
+                    </div>
+
+                    <div class="message-input">
+                        <textarea placeholder="Écrivez votre message..."></textarea>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="new-message-btn" onclick="showNewMessageModal()">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+    <script src="{{url_for('static',filename='js/superAdmin/modals.js')}}"></script>
+    <script src="{{url_for('static',filename='js/superAdmin/notifications.js')}}"></script>
+    
+    <script>
+        function showNewMessageModal() {
+            ModalManager.form({
+                title: 'Nouveau message',
+                formContent: `
+                    <form id="newMessageForm">
+                        <div class="form-group">
+                            <label for="recipient">Destinataire</label>
+                            <select id="recipient" required>
+                                <option value="">Sélectionner une école</option>
+                                <option value="1">Lycée Descartes</option>
+                                <option value="2">Collège Victor Hugo</option>
+                                <option value="3">École Marie Curie</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Sujet</label>
+                            <input type="text" id="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="6" required></textarea>
+                        </div>
+                    </form>
+                `,
+                onSubmit: () => {
+                    ModalManager.notify('Message envoyé avec succès', 'success');
+                }
+            });
+        }
+
+        // Gestion des messages
+        const messageInput = document.querySelector('.message-input textarea');
+        const sendButton = document.querySelector('.message-input button');
+        const messagesList = document.querySelector('.messages-list');
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                const now = new Date();
+                const time = now.getHours() + ':' + now.getMinutes().toString().padStart(2, '0');
+                
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message sent';
+                messageElement.innerHTML = `
+                    <div class="message-content">${message}</div>
+                    <div class="message-time">${time}</div>
+                `;
+                
+                messagesList.appendChild(messageElement);
+                messageInput.value = '';
+                messagesList.scrollTop = messagesList.scrollHeight;
+
+                // Ajouter une notification
+                NotificationSystem.addNotification({
+                    type: 'message',
+                    title: 'Message envoyé',
+                    message: 'Votre message a été envoyé avec succès.',
+                    action: () => {
+                        // Action à effectuer lors du clic sur la notification
+                        messagesList.scrollTop = messagesList.scrollHeight;
+                    }
+                });
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html> 

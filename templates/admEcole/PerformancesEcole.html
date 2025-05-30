@@ -1,0 +1,11 @@
+                <ul>
+                    <li><a href="{{url_for('indexEcole')}}" onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('elevesAdmEcole')}}" onclick="showTab('students')"><i class="fas fa-user-graduate"></i> Élèves</a></li>
+                    <li><a href="{{url_for('professeursEcole')}}" onclick="showTab('teachers')"><i class="fas fa-chalkboard-teacher"></i> Professeurs</a></li>
+                    <li><a href="{{url_for('classesEcole')}}" onclick="showTab('classes')"><i class="fas fa-school"></i> Classes</a></li>
+                    <li><a href="{{url_for('messagerieEcole')}}" onclick="showTab('communication')"><i class="fas fa-comments"></i> Communication</a></li>
+                    <li><a href="{{url_for('notesEtBulletinEcole')}}" onclick="showTab('grades')"><i class="fas fa-clipboard-list"></i> Notes & Bulletins</a></li>
+                    <li><a href="{{url_for('PerformancesEcole')}}" class="active" onclick="showTab('performance')"><i class="fas fa-chart-line"></i> Performances</a></li>
+                    <li><a href="#" onclick="showTab('meetings')"><i class="fas fa-calendar-check"></i> Convocations</a></li>
+                    <li><a href="{{url_for('contacteSuperAdmEcole')}}" onclick="showTab('superadmin')"><i class="fas fa-headset"></i> Support Superadmin</a></li>
+                </ul> 

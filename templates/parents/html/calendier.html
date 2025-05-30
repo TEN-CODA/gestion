@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Parent - École Excellence</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/parent/style.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>École Excellence</h3>
+                <span class="role-badge parent-badge">Parent</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('indexParent')}}"  onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('enfantParent')}}"  onclick="showTab('children')"><i class="fas fa-child"></i> Mes Enfants</a></li>
+                    <li><a href="{{url_for('paiementsParent')}}" onclick="showTab('payments')"><i class="fas fa-money-bill-wave"></i> Paiements</a></li>
+                    <li><a href="{{url_for('messagerieParent')}}" onclick="showTab('messages')"><i class="fas fa-comments"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('performanceParent')}}" onclick="showTab('performance')"><i class="fas fa-chart-line"></i> Performances</a></li>
+                    <li><a href="{{url_for('horaireParent')}}" onclick="showTab('schedule')"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                    <li><a href="#" onclick="showTab('exams')"><i class="fas fa-clipboard-list"></i> Contrôles</a></li>
+                    <li><a href="{{url_for('calendrierParent')}}" class="active" onclick="showTab('calendar')"><i class="fas fa-calendar-check"></i> Calendrier</a></li>
+                </ul>
+                
+                <h4>Autres</h4>
+                <ul>
+                    <li><a href="#" onclick="showTab('absences')"><i class="fas fa-user-times"></i> Absences</a></li>
+                    <li><a href="#" onclick="showTab('behavior')"><i class="fas fa-exclamation-triangle"></i> Comportement</a></li>
+                    <li><a href="{{url_for('notificationsParent')}}"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li><a href="{{url_for('parametreParent')}}" ><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="page-title">Calendrier</h2>
+                <div class="user-info">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Parent Martin</span>
+                </div>
+            </div>
+            
+           
+             <!-- Calendar Tab -->
+             <div id="calendar" class="tab-content">
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <h3>Octobre 2023</h3>
+                        <div>
+                            <button class="btn btn-sm btn-primary"><i class="fas fa-chevron-left"></i></button>
+                            <button class="btn btn-sm btn-primary">Aujourd'hui</button>
+                            <button class="btn btn-sm btn-primary"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">Lun</div>
+                        <div class="calendar-day-header">Mar</div>
+                        <div class="calendar-day-header">Mer</div>
+                        <div class="calendar-day-header">Jeu</div>
+                        <div class="calendar-day-header">Ven</div>
+                        <div class="calendar-day-header">Sam</div>
+                        <div class="calendar-day-header">Dim</div>
+                        
+                        <!-- Empty days -->
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day">
+                            <div class="calendar-event">Réunion parents</div>
+                        </div>
+                        
+                        <!-- Week 1 -->
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        
+                        <!-- Week 2 -->
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        
+                        <!-- Week 3 -->
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day today">
+                            19
+                            <div class="calendar-event">Contrôle Maths</div>
+                        </div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        
+                        <!-- Week 4 -->
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        
+                        <!-- Week 5 -->
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day">31</div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                    </div>
+                </div>
+                
+                <div class="recent-activity" style="margin-top: 20px;">
+                    <h3 class="section-title"><i class="fas fa-calendar-day"></i> Événements à venir</h3>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Contrôle de Mathématiques</h4>
+                                <p>19/10/2023 - 8h-10h</p>
+                                <p>Prof. Dupont - 4ème B</p>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Réunion parents-professeurs</h4>
+                                <p>25/10/2023 - 17h-19h</p>
+                                <p>Salle de réunion</p>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Voyage scolaire</h4>
+                                <p>15/11/2023 - 7h-18h</p>
+                                <p>Musée des Sciences</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            
+            
+        </div>
+    </div>
+    
+    
+
+            
+            
+            
+    <!-- Message Detail Modal --> 
+    <div id="message-modal" class="modal" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Détail du Message</h3>
+                <span class="close" onclick="hideModal('message-modal')">&times;</span>
+            </div>
+            <div class="recent-activity">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Réunion parents-professeurs</h4>
+                        <p>De: Prof. Martin</p>
+                        <p>Date: 15/10/2023 à 14:30</p>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                    <p>Bonjour,</p>
+                    <p>Je vous informe que la réunion parents-professeurs de la classe de 4ème B aura lieu le 25 octobre 2023 à 17h en salle de réunion.</p>
+                    <p>Cette réunion sera l'occasion de faire le point sur les progrès de votre enfant et de discuter des objectifs pour le trimestre à venir.</p>
+                    <p>Merci de confirmer votre présence par retour de message.</p>
+                    <p>Cordialement,</p>
+                    <p>Prof. Martin</p>
+                </div>
+                
+                <form style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label>Réponse</label>
+                        <textarea class="form-control" rows="3" placeholder="Votre réponse..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideModal('message-modal')">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Envoyer la réponse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <script src="{{url_for('static',filename='js/parent/script.js')}}">
+       
+    </script>
+</body>
+</html>

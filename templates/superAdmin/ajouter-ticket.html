@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau ticket - Super Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/superAdmin/style.css')}}">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        .form-group textarea {
+            height: 200px;
+            resize: vertical;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 144, 226, 0.05);
+        }
+
+        .file-upload i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .file-upload p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload span {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .priority-select {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .priority-option {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .priority-option:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 144, 226, 0.05);
+        }
+
+        .priority-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .priority-option i {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .priority-option.low i { color: var(--success-color); }
+        .priority-option.medium i { color: var(--warning-color); }
+        .priority-option.high i { color: var(--danger-color); }
+
+        .priority-option.selected.low i,
+        .priority-option.selected.medium i,
+        .priority-option.selected.high i {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .priority-select {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Super Admin</h3>
+                <span class="role-badge superadmin-badge">Super Administrateur</span>
+            </div>
+            
+            <div class="sidebar-menu">
+                <h4>Menu Principal</h4>
+                <ul>
+                    <li><a href="{{url_for('superadmin_index')}}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                    <li><a href="{{url_for('ecolesSuperAd')}}"><i class="fas fa-school"></i> Écoles</a></li>
+                    <li><a href="{{url_for('usersSuperAd')}}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="{{url_for('supportSuperAd')}}" class="active"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="{{url_for('rapportsSuperAd')}}"><i class="fas fa-chart-bar"></i> Rapports</a></li>
+                    <li><a href="{{url_for('messagerieSuperAd')}}"><i class="fas fa-envelope"></i> Messagerie</a></li>
+                    <li><a href="{{url_for('parametresSuperAd')}}"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Nouveau ticket</h1>
+                <div class="notifications-container">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Créer un ticket</h2>
+                    <p>Remplissez les informations ci-dessous pour créer un nouveau ticket de support</p>
+                </div>
+
+                <form id="addTicketForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="subject">Sujet</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Catégorie</label>
+                            <select id="category" name="category" required>
+                                <option value="">Sélectionnez une catégorie</option>
+                                <option value="technical">Problème technique</option>
+                                <option value="account">Compte utilisateur</option>
+                                <option value="billing">Facturation</option>
+                                <option value="feature">Demande de fonctionnalité</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Priorité</label>
+                            <div class="priority-select">
+                                <div class="priority-option low" data-value="low">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span>Basse</span>
+                                </div>
+                                <div class="priority-option medium" data-value="medium">
+                                    <i class="fas fa-minus"></i>
+                                    <span>Moyenne</span>
+                                </div>
+                                <div class="priority-option high" data-value="high">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>Haute</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="priority" name="priority" value="medium">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Pièces jointes</label>
+                            <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                                <input type="file" id="fileInput" multiple style="display: none">
+                                <i class="fas fa-paperclip"></i>
+                                <p>Cliquez pour ajouter des fichiers</p>
+                                <span>PDF, images, documents (max. 5MB par fichier)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="assignTo">Assigner à</label>
+                            <select id="assignTo" name="assignTo">
+                                <option value="">Non assigné</option>
+                                <option value="1">Support Niveau 1</option>
+                                <option value="2">Support Niveau 2</option>
+                                <option value="3">Support Niveau 3</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dueDate">Date limite</label>
+                            <input type="date" id="dueDate" name="dueDate">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="history.back()">Annuler</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-ticket-alt"></i> Créer le ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{url_for('static',filename='js/superAdmin/main.js')}}"></script>
+    <script>
+        document.getElementById('addTicketForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Logique de création de ticket à implémenter
+            showNotification('Ticket créé avec succès !', 'success');
+            setTimeout(() => {
+                window.location.href = 'support.html';
+            }, 1500);
+        });
+
+        // Gestion de la priorité
+        const priorityOptions = document.querySelectorAll('.priority-option');
+        const priorityInput = document.getElementById('priority');
+
+        priorityOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Retirer la classe selected de toutes les options
+                priorityOptions.forEach(opt => opt.classList.remove('selected'));
+                // Ajouter la classe selected à l'option cliquée
+                this.classList.add('selected');
+                // Mettre à jour la valeur cachée
+                priorityInput.value = this.dataset.value;
+            });
+        });
+
+        // Sélectionner la priorité moyenne par défaut
+        document.querySelector('.priority-option[data-value="medium"]').classList.add('selected');
+
+        // Gestion des fichiers
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                const fileUpload = document.querySelector('.file-upload');
+                let fileList = '<div class="file-list">';
+                
+                for (let file of files) {
+                    fileList += `
+                        <div class="file-item">
+                            <i class="fas fa-file"></i>
+                            <span>${file.name}</span>
+                            <small>(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+                        </div>
+                    `;
+                }
+                
+                fileList += '</div>';
+                fileUpload.innerHTML = fileList;
+            }
+        });
+    </script>
+</body>
+</html> 
